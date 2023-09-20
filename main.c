@@ -90,13 +90,13 @@ int main(int argc, char *argv[])
         // set up availability array
         struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
         int queue_index = 0;
-        // each port gets one thread
-        omp_set_num_threads(PORTS_PER_NODE);
+        // each port gets one thread, one thread dedicated to communication and tallying
+        omp_set_num_threads(PORTS_PER_NODE + 1);
 
         // simulate node over time
         for (int second = 0; second < 10; second++) // TODO: replace this condition
         {
-            // update shared array
+            // set up shared struct for current timestamp
             time_t current_time;
             struct tm *time_info;
             time(&current_time);
@@ -110,41 +110,40 @@ int main(int argc, char *argv[])
             struct TimestampData new_entry = {year, month, day, hours, minutes, seconds, 0};
             timestamp_queue[queue_index] = new_entry;
 
-            // Each port updates its availability
 #pragma omp parallel
             {
-                // a port has a 1/2 chance of being available at any timestamp
-                if (rand() % 2 == 0)
+                int thread_id = omp_get_thread_num();
+                if (thread_id == 0)
                 {
+                    // Thread 0 handles tallying and communication
+                    if (second % 3 == 0)
+                    // tally results every 3 iterations
+                    {
+                        printf("T: %d, I am node %d, thread %d\n", second, worker_rank, thread_id);
+                        // get available ports
+                        // if less than threshold, alert neighbours
+                        // await response
+                        // if all neighbours occupied, alert base station
+
+                        // probe neighbours for alerts
+                        // if alerts received, reply
+
+                    }
+                }
+                else
+                // Threads 1..N are ports. Each port updates its availability
+                {
+                    // a port has a 1/2 chance of being available at any timestamp
+                    if (rand() % 2 == 0)
+                    {
 #pragma omp atomic
-                    timestamp_queue[queue_index].available_ports++;
+                        // update shared array
+                        timestamp_queue[queue_index].available_ports++;
+                    }
                 }
             }
-
             // circular queue behaviour
             queue_index = (queue_index + 1) % MAX_TIMESTAMP_DATAPOINTS;
-
-            // communicate with neighbours
-            // alert neighbours if running low on ports
-            // IDEA: send message to all neighbours, but in the message, indicate if you need a response
-            // if (available_ports < AVAILABILITY_THRESHOLD)
-            // {
-            //     MPI_Request send_request[NEIGHBOURS];
-            //     MPI_Request receive_request[NEIGHBOURS];
-            //     MPI_Status send_status[NEIGHBOURS];
-            //     MPI_Status receive_status[NEIGHBOURS];
-            //     int neighbours[NEIGHBOURS];
-            //     MPI_Cart_shift(cart_comm, SHIFT_ROW, DISP, &neighbours[0], &neighbours[1]);
-            //     MPI_Cart_shift(cart_comm, SHIFT_COL, DISP, &neighbours[2], &neighbours[3]);
-            //     for (int i = 0; i < NEIGHBOURS; i++)
-            //     {
-            //         if (neighbours[i] != MPI_PROC_NULL)
-            //         {
-            //             int alert_neighbours_signal = ALERT_NEIGHBOURS_SIGNAL;
-            //             MPI_Isend(&alert_neighbours_signal, 1, MPI_INT, neighbours[i], 0, cart_comm, send_request[i])
-            //         }
-            //     }
-            // }
         }
     }
 
