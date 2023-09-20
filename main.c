@@ -1,9 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include <omp.h>
+#include <time.h>
 
 #define BASE_STATION_RANK 0
 #define CARTESIAN_DIMENSIONS 2
+#define MAX_TIMESTAMP_DATAPOINTS 5
+#define PORTS_PER_NODE 5
+#define AVAILABILITY_THRESHOLD 2
+#define SHIFT_ROW 0
+#define SHIFT_COL 1
+#define DISP 1
+#define NEIGHBOURS 4
+
+struct TimestampData
+{
+    int year;
+    int month;
+    int day;
+    int hours;
+    int minutes;
+    int seconds;
+    int available_ports;
+};
 
 int main(int argc, char *argv[])
 {
@@ -57,7 +77,7 @@ int main(int argc, char *argv[])
         // get node's coordinates
         MPI_Comm_rank(worker_comm, &worker_rank);
         MPI_Cart_coords(cart_comm, worker_rank, CARTESIAN_DIMENSIONS, coord);
-        printf("Node global rank: %d\nNode grid rank: %d\nNode cartesian coordinates: %d, %d\n\n", global_rank, worker_rank, coord[0], coord[1]);
+        // printf("Node global rank: %d\nNode grid rank: %d\nNode cartesian coordinates: %d, %d\n\n", global_rank, worker_rank, coord[0], coord[1]);
     }
 
     // lifecycle loops
@@ -67,11 +87,73 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("Node doing its thang\n");
+        // set up availability array
+        struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
+        int queue_index = 0;
+        // each port gets one thread
+        omp_set_num_threads(PORTS_PER_NODE);
+
+        // simulate node over time
+        for (int second = 0; second < 10; second++) // TODO: replace this condition
+        {
+            // update shared array
+            time_t current_time;
+            struct tm *time_info;
+            time(&current_time);
+            time_info = localtime(&current_time);
+            int year = time_info->tm_year + 1900; // Year starts from 1900, add 1900
+            int month = time_info->tm_mon + 1;    // Months are 0-based, add 1
+            int day = time_info->tm_mday;
+            int hours = time_info->tm_hour;
+            int minutes = time_info->tm_min;
+            int seconds = time_info->tm_sec;
+            struct TimestampData new_entry = {year, month, day, hours, minutes, seconds, 0};
+            timestamp_queue[queue_index] = new_entry;
+
+            // Each port updates its availability
+#pragma omp parallel
+            {
+                // a port has a 1/2 chance of being available at any timestamp
+                if (rand() % 2 == 0)
+                {
+#pragma omp atomic
+                    timestamp_queue[queue_index].available_ports++;
+                }
+            }
+
+            // circular queue behaviour
+            queue_index = (queue_index + 1) % MAX_TIMESTAMP_DATAPOINTS;
+
+            // communicate with neighbours
+            // alert neighbours if running low on ports
+            // IDEA: send message to all neighbours, but in the message, indicate if you need a response
+            // if (available_ports < AVAILABILITY_THRESHOLD)
+            // {
+            //     MPI_Request send_request[NEIGHBOURS];
+            //     MPI_Request receive_request[NEIGHBOURS];
+            //     MPI_Status send_status[NEIGHBOURS];
+            //     MPI_Status receive_status[NEIGHBOURS];
+            //     int neighbours[NEIGHBOURS];
+            //     MPI_Cart_shift(cart_comm, SHIFT_ROW, DISP, &neighbours[0], &neighbours[1]);
+            //     MPI_Cart_shift(cart_comm, SHIFT_COL, DISP, &neighbours[2], &neighbours[3]);
+            //     for (int i = 0; i < NEIGHBOURS; i++)
+            //     {
+            //         if (neighbours[i] != MPI_PROC_NULL)
+            //         {
+            //             int alert_neighbours_signal = ALERT_NEIGHBOURS_SIGNAL;
+            //             MPI_Isend(&alert_neighbours_signal, 1, MPI_INT, neighbours[i], 0, cart_comm, send_request[i])
+            //         }
+            //     }
+            // }
+        }
     }
+
     // clean up
-    // MPI_Comm_free(&worker_comm);
-    // MPI_Comm_free(&cart_comm);
+    if (global_rank != BASE_STATION_RANK)
+    {
+        MPI_Comm_free(&cart_comm);
+        MPI_Comm_free(&worker_comm);
+    }
     MPI_Finalize();
 
     return 0;
