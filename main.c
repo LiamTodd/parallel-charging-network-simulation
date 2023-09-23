@@ -3,15 +3,13 @@
 #include <mpi.h>
 #include <omp.h>
 #include <time.h>
+#include "base_station.h"
+#include "node.h"
 
 #define BASE_STATION_RANK 0
-#define CARTESIAN_DIMENSIONS 2
 #define MAX_TIMESTAMP_DATAPOINTS 5
 #define PORTS_PER_NODE 5
 #define AVAILABILITY_THRESHOLD 2
-#define SHIFT_ROW 0
-#define SHIFT_COL 1
-#define DISP 1
 #define MAX_NEIGHBOURS 4
 #define ALERT_NEIGHBOUR_SIGNAL 100
 #define AVAILABLE 1
@@ -30,11 +28,10 @@ struct TimestampData
 
 int main(int argc, char *argv[])
 {
-    int global_rank, worker_rank, grid_size, reorder = 1, n, m, processors, provided;
+    int global_rank, worker_rank, provided;
     MPI_Comm worker_comm, cart_comm;
-    int wrap_around[CARTESIAN_DIMENSIONS] = {0, 0}, dims[CARTESIAN_DIMENSIONS], coord[CARTESIAN_DIMENSIONS], neighbours[MAX_NEIGHBOURS];
+    int dims[CARTESIAN_DIMENSIONS], coord[CARTESIAN_DIMENSIONS], neighbours[MAX_NEIGHBOURS];
 
-    // MPI_Init(&argc, &argv);
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided < MPI_THREAD_MULTIPLE)
     {
@@ -45,66 +42,45 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &global_rank);
     MPI_Comm_split(MPI_COMM_WORLD, global_rank == BASE_STATION_RANK, 0, &worker_comm);
 
-    // set-up
+    // base station set-up
     if (global_rank == BASE_STATION_RANK)
     {
-        // base station: read in command-line args
-        if (argc != 3)
+        if (base_station_set_up(argc, argv, dims) != 0)
         {
-            printf("Error: Invalid number of arguments.\n");
+            printf("Error setting up base station\n");
             return 1;
-        }
-        m = atoi(argv[1]);
-        n = atoi(argv[2]);
-        if (m == 0 || n == 0)
-        {
-            printf("Error: Invalid values of n and m. n and m must be positive integers.\n");
-            return 1;
-        }
-        // ensure that processors can accommodate dimensions
-        MPI_Comm_size(MPI_COMM_WORLD, &processors);
-        if (processors != m * n + 1)
-        {
-            printf("Error: Dimensions cannot be accommodated by the number of processors. Number of processors must equal n * m + 1.\n");
-            return 1;
-        }
-        dims[0] = m;
-        dims[1] = n;
+        };
     }
     // broadcast dims to workers
     MPI_Bcast(&dims, CARTESIAN_DIMENSIONS, MPI_INT, BASE_STATION_RANK, MPI_COMM_WORLD);
+    // node set-up
     if (global_rank != BASE_STATION_RANK)
     {
-        // nodes: set up cartesian grid
-        grid_size = dims[0] * dims[1];
-        // create cartesian grid of worker nodes
-        MPI_Dims_create(grid_size, CARTESIAN_DIMENSIONS, dims);
-        if (MPI_Cart_create(worker_comm, CARTESIAN_DIMENSIONS, dims, wrap_around, reorder, &cart_comm) != 0)
+        if (node_set_up(&worker_comm, &cart_comm, dims, coord, neighbours, &worker_rank) != 0)
         {
-            printf("Error: unable to create cartesian grid.");
+            printf("Error setting up node\n");
             return 1;
         }
-        // get node's coordinates
-        MPI_Comm_rank(worker_comm, &worker_rank);
-        MPI_Cart_coords(cart_comm, worker_rank, CARTESIAN_DIMENSIONS, coord);
-        // printf("Node global rank: %d\nNode grid rank: %d\nNode cartesian coordinates: %d, %d\n\n", global_rank, worker_rank, coord[0], coord[1]);
-        // find neighbours
-        MPI_Cart_shift(cart_comm, SHIFT_ROW, DISP, &neighbours[0], &neighbours[1]);
-        MPI_Cart_shift(cart_comm, SHIFT_COL, DISP, &neighbours[2], &neighbours[3]);
+        // printf("Node global rank: %d\nNode grid rank: %d\nNode cartesian coordinates: %d, %d\nNeighbours: %d %d %d %d\n\n", global_rank, worker_rank, coord[0], coord[1], neighbours[0], neighbours[1], neighbours[2], neighbours[3]);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
 
     // lifecycle loops
     if (global_rank == BASE_STATION_RANK)
     {
-        printf("Base station doing its thang\n");
+        if (base_station_loop() != 0)
+        {
+            printf("Error in base station lifecycle loop\n");
+            return 1;
+        }
     }
     else
     {
         // set up availability array
         struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
         int queue_index = 0;
-        // each port gets one thread, one thread dedicated to communication and tallying
-        omp_set_num_threads(PORTS_PER_NODE + 1);
+        // each port gets one thread, one thread dedicated to sending alerts, one dedicated to receiving alerts
+        omp_set_num_threads(PORTS_PER_NODE + 2);
 
         // simulate node over time
         for (int second = 0; second < 10; second++) // TODO: replace this condition
@@ -126,26 +102,21 @@ int main(int argc, char *argv[])
 #pragma omp parallel
             {
                 int thread_num = omp_get_thread_num();
-
+                // Check available ports
+                struct TimestampData current_data;
+#pragma omp critical
+                {
+                    current_data = timestamp_queue[queue_index];
+                }
                 if (thread_num == 0)
                 {
-                    // Thread 0 handles tallying and communication
+                    // Thread 0 handles tallying and sending alerts
                     if (second % 3 == 0)
                     {
-                        // Check available ports
-                        struct TimestampData current_data;
-#pragma omp critical
-                        {
-                            current_data = timestamp_queue[queue_index];
-                        }
                         if (current_data.available_ports < AVAILABILITY_THRESHOLD)
                         {
                             printf("T: %d, Node: %d, Low availability.\n", second, worker_rank);
                             // alert neighbours
-                            MPI_Request send_request[MAX_NEIGHBOURS];
-                            MPI_Request receive_request[MAX_NEIGHBOURS];
-                            MPI_Status send_status[MAX_NEIGHBOURS];
-                            MPI_Status receive_status[MAX_NEIGHBOURS];
                             int alert_neighbour_signal = ALERT_NEIGHBOUR_SIGNAL;
                             int neighbour_availability[MAX_NEIGHBOURS] = {-1, -1, -1, -1};
                             int i;
@@ -153,13 +124,12 @@ int main(int argc, char *argv[])
                             {
                                 if (neighbours[i] != MPI_PROC_NULL)
                                 {
-                                    // USE TAG TO SPECIFY MESSAGE TYPE
-                                    MPI_Isend(&alert_neighbour_signal, 1, MPI_INT, neighbours[i], 0, cart_comm, &send_request[i]);
-                                    MPI_Irecv(&neighbour_availability[i], 1, MPI_INT, neighbours[i], 0, cart_comm, &receive_request[i]);
+                                    MPI_Status recv_status;
+                                    printf("Node %d sending message to node %d\n", worker_rank, neighbours[i]);
+                                    MPI_Send(&alert_neighbour_signal, 1, MPI_INT, neighbours[i], 0, cart_comm);
+                                    MPI_Recv(&neighbour_availability[i], 1, MPI_INT, neighbours[i], 0, cart_comm, &recv_status);
                                 }
                             }
-                            MPI_Waitall(MAX_NEIGHBOURS, send_request, send_status);
-                            MPI_Waitall(MAX_NEIGHBOURS, receive_request, receive_status);
                             // if neighbour free, indicate somewhere
                             // if all neighbours occupied, alert base station
                             for (i = 0; i < MAX_NEIGHBOURS; i++)
@@ -170,30 +140,41 @@ int main(int argc, char *argv[])
                                 }
                             }
                         }
-                        // probe neighbours for alerts, respond with availability
-                        int i;
-                        for (i = 0; i < MAX_NEIGHBOURS; i++)
+                    }
+                }
+                else if (thread_num == 1)
+                {
+                    // thread 1 periodically probes neighbours for alerts, responds with availability
+                    struct TimestampData current_data;
+#pragma omp critical
+                    {
+                        current_data = timestamp_queue[queue_index];
+                    }
+                    int i;
+                    for (i = 0; i < MAX_NEIGHBOURS; i++)
+                    {
+                        if (neighbours[i] != MPI_PROC_NULL)
                         {
-                            if (neighbours[i] != MPI_PROC_NULL)
+                            int flag = 0;
+                            MPI_Status probe_status;
+                            MPI_Status recv_status;
+                            MPI_Iprobe(neighbours[i], 0, cart_comm, &flag, &probe_status);
+                            if (flag)
                             {
-                                int flag = 0;
-                                MPI_Status probe_status;
-                                MPI_Iprobe(neighbours[i], 0, cart_comm, &flag, &probe_status);
-                                if (flag)
+                                int alert_signal;
+                                MPI_Recv(&alert_signal, 1, MPI_INT, neighbours[i], 0, cart_comm, &recv_status);
+                                if (alert_signal == ALERT_NEIGHBOUR_SIGNAL)
                                 {
-                                    int alert_signal;
-                                    MPI_Recv(&alert_signal, 1, MPI_INT, neighbours[i], 0, cart_comm, MPI_STATUS_IGNORE); // TODO replace with IRecv
-                                    if (alert_signal == ALERT_NEIGHBOUR_SIGNAL)
-                                    {
-                                        // reply to neighbour
-                                    }
+                                    printf("I am %d and received a message from %d and have %d available\n", worker_rank, neighbours[i], current_data.available_ports);
+
+                                    MPI_Send(&current_data.available_ports, 1, MPI_INT, neighbours[i], 0, cart_comm);
                                 }
                             }
                         }
                     }
                 }
                 else
-                // Threads 1..N are ports. Each port updates its availability
+                // Threads 2..N are ports. Each port updates its availability
                 {
                     // a port has a 1/2 chance of being available at any timestamp
                     unsigned int seed = thread_num * worker_rank + second;
