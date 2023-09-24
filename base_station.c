@@ -30,7 +30,7 @@ int base_station_set_up(int argc, char *argv[], int *dims)
     return 0;
 }
 
-int base_station_loop(){
+int base_station_lifecycle(){
     printf("base station base stationing\n");
     return 0;
 }
