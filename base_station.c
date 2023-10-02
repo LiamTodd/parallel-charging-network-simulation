@@ -1,6 +1,7 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "shared_constants.h"
 
 int base_station_set_up(int argc, char *argv[], int *dims)
 {
@@ -30,7 +31,16 @@ int base_station_set_up(int argc, char *argv[], int *dims)
     return 0;
 }
 
-int base_station_lifecycle(){
-    printf("base station base stationing\n");
+int base_station_lifecycle(int num_nodes)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        sleep(1);
+    }
+    int termination_signal = TERMINATION_SIGNAL;
+    for (int i = 1; i < num_nodes + 1; i++)
+    {
+        MPI_Send(&termination_signal, 1, MPI_INT, i, TERMINATION_TAG, MPI_COMM_WORLD);
+    }
     return 0;
 }

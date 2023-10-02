@@ -3,8 +3,7 @@
 #include <mpi.h>
 #include "base_station.h"
 #include "node.h"
-
-#define BASE_STATION_RANK 0
+#include "shared_constants.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +47,7 @@ int main(int argc, char *argv[])
     // lifecycle loops
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_lifecycle() != 0)
+        if (base_station_lifecycle(dims[0] * dims[1]) != 0)
         {
             printf("Error in base station lifecycle.\n");
             return 1;
