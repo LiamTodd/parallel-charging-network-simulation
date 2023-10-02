@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #include <omp.h>
+#include <string.h>
 #include "node.h"
 #include "shared_constants.h"
 
@@ -30,6 +32,7 @@ int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coor
 
 int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
 {
+    char alert_string[100];
     // set up shared struct for current timestamp
     struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
     int queue_index = 0;
@@ -66,7 +69,6 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
                 }
                 if (current_availability < AVAILABILITY_THRESHOLD)
                 {
-                    printf("ALERT: Node %d low availability. Sending message to %d, %d, %d, %d\n", worker_rank, neighbours[0], neighbours[1], neighbours[2], neighbours[3]);
                     // alert neighbours
                     int alert_neighbour_signal = ALERT_NEIGHBOUR_SIGNAL;
                     int neighbour_availability[MAX_NEIGHBOURS] = {-1, -1, -1, -1};
@@ -82,7 +84,7 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
                             time(&wait_current);
                             MPI_Status probe_status;
                             int flag = 0;
-                            while (wait_current - wait_start < MAX_WAIT_TIME)
+                            while (wait_current - wait_start < MAX_WAIT_TIME && exit_flag == 0)
                             {
                                 MPI_Iprobe(neighbours[i], NEIGHBOUR_AVAILABILITY_TAG, *cart_comm, &flag, &probe_status);
                                 if (flag)
@@ -95,17 +97,35 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
                                     time(&wait_current);
                                 }
                             }
-                            printf("Node %d: Time waited for %d: %li\n", worker_rank, neighbours[i], wait_current - wait_start);
                         }
                     }
-                    printf("RECV: Node %d received availability from neighbours: %d, %d, %d, %d\n", worker_rank, neighbour_availability[0], neighbour_availability[1], neighbour_availability[2], neighbour_availability[3]);
-                    // if neighbour free, indicate somewhere
+                    // if neighbour free, indicate this
                     // if all neighbours occupied, alert base station
+                    sprintf(alert_string, "ALERT: Node %d has low availability. The following neighbours have sufficient availability: ", worker_rank);
+                    int neighbour_available = 0;
                     for (i = 0; i < MAX_NEIGHBOURS; i++)
                     {
+
                         if (neighbours[i] != MPI_PROC_NULL)
                         {
-                            // printf("RECV: Node %d Received message from %d: Available: %d\n", worker_rank, neighbours[i], neighbour_availability[i]);
+                            if (neighbour_availability[i] >= AVAILABILITY_THRESHOLD)
+                            {
+                                char neighbour_availability_string[10];
+                                neighbour_available = 1;
+                                sprintf(neighbour_availability_string, "%d, ", neighbours[i]);
+                                strcat(alert_string, neighbour_availability_string);
+                            }
+                        }
+                    }
+                    if (exit_flag == 0)
+                    {
+                        if (neighbour_available)
+                        {
+                            printf("%s\n", alert_string);
+                        }
+                        else
+                        {
+                            printf("ALERT: Node %d AND its neighbours have low availability. Sending request to base station\n", worker_rank);
                         }
                     }
                 }
@@ -137,7 +157,6 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
                             MPI_Recv(&alert_signal, 1, MPI_INT, neighbours[i], NEIGHBOUR_ALERT_TAG, *cart_comm, &recv_status);
                             if (alert_signal == ALERT_NEIGHBOUR_SIGNAL)
                             {
-                                printf("REPLY: Node %d received message from %d and has %d available\n", worker_rank, neighbours[i], current_availability);
                                 MPI_Send(&current_availability, 1, MPI_INT, neighbours[i], NEIGHBOUR_AVAILABILITY_TAG, *cart_comm);
                             }
                         }
@@ -199,7 +218,7 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
 #pragma omp critical
                 {
                     // a port has a 1/3 chance of being unavailable at any timestamp
-                    if (rand_r(&seed) % 1 == 0 && timestamp_queue[queue_index].available_ports > 0 && worker_rank == 1)
+                    if (rand_r(&seed) % 2 == 0 && timestamp_queue[queue_index].available_ports > 0)
                     {
                         timestamp_queue[queue_index].available_ports--;
                     }
@@ -209,5 +228,3 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
     }
     return 0;
 }
-
-// have one thread to poll the master for a 'stop' condition, at which point the whole function stops and returns

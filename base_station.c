@@ -1,6 +1,7 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "shared_constants.h"
 
 int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_seconds)
