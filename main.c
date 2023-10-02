@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[])
 {
-    int global_rank, worker_rank, provided;
+    int global_rank, worker_rank, provided, simulation_seconds;
     MPI_Comm worker_comm, cart_comm;
     int dims[CARTESIAN_DIMENSIONS], coord[CARTESIAN_DIMENSIONS], neighbours[MAX_NEIGHBOURS];
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     // base station set-up
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_set_up(argc, argv, dims) != 0)
+        if (base_station_set_up(argc, argv, dims, &simulation_seconds) != 0)
         {
             printf("Error setting up base station.\n");
             return 1;
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     // lifecycle loops
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_lifecycle(dims[0] * dims[1]) != 0)
+        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds) != 0)
         {
             printf("Error in base station lifecycle.\n");
             return 1;

@@ -3,21 +3,26 @@
 #include <stdlib.h>
 #include "shared_constants.h"
 
-int base_station_set_up(int argc, char *argv[], int *dims)
+int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_seconds)
 {
     int m, n, processors;
     // base station: read in command-line args
-    if (argc != 3)
+    if (argc != 4)
     {
         printf("Error: Invalid number of arguments.\n");
         return 1;
     }
     m = atoi(argv[1]);
     n = atoi(argv[2]);
+    *simulation_seconds = atoi(argv[3]);
     if (m == 0 || n == 0)
     {
         printf("Error: Invalid values of n and m. n and m must be positive integers.\n");
         return 1;
+    }
+    if (*simulation_seconds < 1)
+    {
+        printf("Error: Invalid value simulation seconds. Must be a positive integer.\n");
     }
     // ensure that processors can accommodate dimensions
     MPI_Comm_size(MPI_COMM_WORLD, &processors);
@@ -31,9 +36,9 @@ int base_station_set_up(int argc, char *argv[], int *dims)
     return 0;
 }
 
-int base_station_lifecycle(int num_nodes)
+int base_station_lifecycle(int num_nodes, int simulation_seconds)
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < simulation_seconds; i++)
     {
         sleep(1);
     }
