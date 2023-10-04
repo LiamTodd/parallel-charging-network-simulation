@@ -7,6 +7,7 @@
 #include <string.h>
 #include "node.h"
 #include "shared_constants.h"
+#include "shared_structs.h"
 
 int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *worker_rank)
 {
@@ -30,9 +31,8 @@ int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coor
     return 0;
 }
 
-int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
+int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype neighbour_available_report_type)
 {
-    char alert_string[100];
     // set up shared struct for current timestamp
     struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
     int queue_index = 0;
@@ -101,30 +101,48 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank)
                     }
                     // if neighbour free, indicate this
                     // if all neighbours occupied, alert base station
-                    sprintf(alert_string, "ALERT: Node %d has low availability. The following neighbours have sufficient availability: ", worker_rank);
                     int neighbour_available = 0;
+                    struct NeighbourAvailableReport available_report;
+                    available_report.reporting_node = worker_rank;
+                    available_report.reporting_node_availability = current_availability;
+                    available_report.messages_exchanged_between_nodes = 0;
                     for (i = 0; i < MAX_NEIGHBOURS; i++)
                     {
 
+                        available_report.neighbours[i] = neighbours[i];
+
                         if (neighbours[i] != MPI_PROC_NULL)
                         {
+                            // 2 messages exchanged with each neighbour
+                            available_report.messages_exchanged_between_nodes += 2;
                             if (neighbour_availability[i] >= AVAILABILITY_THRESHOLD)
                             {
-                                char neighbour_availability_string[10];
+                                // 1 means neighbour is available
+                                available_report.available_neighbours[i] = 1;
                                 neighbour_available = 1;
-                                sprintf(neighbour_availability_string, "%d, ", neighbours[i]);
-                                strcat(alert_string, neighbour_availability_string);
                             }
+                            else
+                            {
+                                // 0 means neighbour is unavailable
+                                available_report.available_neighbours[i] = 0;
+                            }
+                        }
+                        else
+                        {
+                            // -1 means no neighbour
+                            available_report.available_neighbours[i] = -1;
                         }
                     }
                     if (exit_flag == 0)
                     {
                         if (neighbour_available)
                         {
-                            printf("%s\n", alert_string);
+                            printf("Node %d unavailable but its nieghbours are available. Indicating to base station\n", worker_rank);
+                            MPI_Send(&available_report, 1, neighbour_available_report_type, BASE_STATION_RANK, INDICATE_NEIGHBOUR_AVAILABLE_TAG, MPI_COMM_WORLD);
                         }
                         else
                         {
+                            // don't need to print anything
                             printf("ALERT: Node %d AND its neighbours have low availability. Sending request to base station\n", worker_rank);
                         }
                     }

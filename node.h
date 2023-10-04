@@ -25,4 +25,4 @@ struct TimestampData
 
 int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *worker_rank);
 
-int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank);
+int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype neighbour_available_report_type);
