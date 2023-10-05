@@ -9,7 +9,7 @@
 #include "shared_constants.h"
 #include "shared_structs.h"
 
-int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *worker_rank)
+int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *second_order_neighbours, int *worker_rank)
 {
     int wrap_around[CARTESIAN_DIMENSIONS] = {0, 0};
     int grid_size = dims[0] * dims[1];
@@ -28,10 +28,61 @@ int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coor
     // find neighbours
     MPI_Cart_shift(*cart_comm, SHIFT_ROW, DISP, &neighbours[0], &neighbours[1]);
     MPI_Cart_shift(*cart_comm, SHIFT_COL, DISP, &neighbours[2], &neighbours[3]);
+
+    // Calculate second order neighbour ranks
+    int top_top[2] = {coord[0] - 2, coord[1]};          // Top-top neighbor
+    int top_right[2] = {coord[0] - 1, coord[1] + 1};    // Top-right neighbor
+    int right_right[2] = {coord[0], coord[1] + 2};      // Right-right neighbor
+    int bottom_right[2] = {coord[0] + 1, coord[1] + 1}; // Bottom-right neighbor
+    int bottom_bottom[2] = {coord[0] + 2, coord[1]};    // Bottom-bottom neighbor
+    int bottom_left[2] = {coord[0] + 1, coord[1] - 1};  // Bottom-left neighbor
+    int left_left[2] = {coord[0], coord[1] - 2};        // Left-left neighbor
+    int top_left[2] = {coord[0] - 1, coord[1] - 1};     // Top-left neighbor
+
+    // Initialize neighbors with invalid ranks
+    for (int i = 0; i < 8; i++)
+    {
+        second_order_neighbours[i] = MPI_PROC_NULL;
+    }
+
+    // Check if the calculated coordinates are within the boundaries
+    if (coord[0] >= 2)
+    {
+        MPI_Cart_rank(*cart_comm, top_top, &second_order_neighbours[0]); // Top-top neighbor
+    }
+    if (coord[0] >= 1 && coord[1] < dims[1] - 1)
+    {
+        MPI_Cart_rank(*cart_comm, top_right, &second_order_neighbours[1]); // Top-right neighbor
+    }
+    if (coord[1] < dims[1] - 2)
+    {
+        MPI_Cart_rank(*cart_comm, right_right, &second_order_neighbours[2]); // Right-right neighbor
+    }
+    if (coord[0] < dims[0] - 1 && coord[1] < dims[1] - 1)
+    {
+        MPI_Cart_rank(*cart_comm, bottom_right, &second_order_neighbours[3]); // Bottom-right neighbor
+    }
+    if (coord[0] < dims[0] - 2)
+    {
+        MPI_Cart_rank(*cart_comm, bottom_bottom, &second_order_neighbours[4]); // Bottom-bottom neighbor
+    }
+    if (coord[0] < dims[0] - 1 && coord[1] >= 1)
+    {
+        MPI_Cart_rank(*cart_comm, bottom_left, &second_order_neighbours[5]); // Bottom-left neighbor
+    }
+    if (coord[1] >= 2)
+    {
+        MPI_Cart_rank(*cart_comm, left_left, &second_order_neighbours[6]); // Left-left neighbor
+    }
+    if (coord[0] >= 1 && coord[1] >= 1)
+    {
+        MPI_Cart_rank(*cart_comm, top_left, &second_order_neighbours[7]); // Top-left neighbor
+    }
+
     return 0;
 }
 
-int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype neighbour_available_report_type)
+int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype alert_report_type)
 {
     // set up shared struct for current timestamp
     struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
@@ -99,52 +150,37 @@ int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Da
                             }
                         }
                     }
-                    // if neighbour free, indicate this
-                    // if all neighbours occupied, alert base station
-                    int neighbour_available = 0;
-                    struct NeighbourAvailableReport available_report;
-                    available_report.reporting_node = worker_rank;
-                    available_report.reporting_node_availability = current_availability;
-                    available_report.messages_exchanged_between_nodes = 0;
+                    // prepare report for base station
+                    struct AlertReport alert_report;
+                    alert_report.reporting_node = worker_rank;
+                    alert_report.reporting_node_availability = current_availability;
+                    alert_report.messages_exchanged_between_nodes = 0;
                     for (i = 0; i < MAX_NEIGHBOURS; i++)
                     {
 
-                        available_report.neighbours[i] = neighbours[i];
+                        alert_report.neighbours[i] = neighbours[i];
 
                         if (neighbours[i] != MPI_PROC_NULL)
                         {
                             // 2 messages exchanged with each neighbour
-                            available_report.messages_exchanged_between_nodes += 2;
-                            if (neighbour_availability[i] >= AVAILABILITY_THRESHOLD)
-                            {
-                                // 1 means neighbour is available
-                                available_report.available_neighbours[i] = 1;
-                                neighbour_available = 1;
-                            }
-                            else
-                            {
-                                // 0 means neighbour is unavailable
-                                available_report.available_neighbours[i] = 0;
-                            }
+                            alert_report.messages_exchanged_between_nodes += 2;
+                            alert_report.neighbours_availability[i] = neighbour_availability[i];
                         }
                         else
                         {
-                            // -1 means no neighbour
-                            available_report.available_neighbours[i] = -1;
+                            // -1 indicates that there is no neighbour for this index
+                            alert_report.neighbours_availability[i] = -1;
                         }
+                    }
+                    for (i = 0; i < MAX_SECOND_ORDER_NEIGHBOURS; i++)
+                    {
+                        alert_report.second_order_neighbours[i] = second_order_neighbours[i];
                     }
                     if (exit_flag == 0)
                     {
-                        if (neighbour_available)
-                        {
-                            printf("Node %d unavailable but its nieghbours are available. Indicating to base station\n", worker_rank);
-                            MPI_Send(&available_report, 1, neighbour_available_report_type, BASE_STATION_RANK, INDICATE_NEIGHBOUR_AVAILABLE_TAG, MPI_COMM_WORLD);
-                        }
-                        else
-                        {
-                            // don't need to print anything
-                            printf("ALERT: Node %d AND its neighbours have low availability. Sending request to base station\n", worker_rank);
-                        }
+                        printf("Node %d alerting base station\n", worker_rank);
+                        // indicate to base station that the node is occupied, but its neighbours have availability
+                        MPI_Send(&alert_report, 1, alert_report_type, BASE_STATION_RANK, ALERT_TAG, MPI_COMM_WORLD);
                     }
                 }
             }

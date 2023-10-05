@@ -38,22 +38,22 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
     return 0;
 }
 
-int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype neighbour_available_report_type)
+int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type)
 {
-    for (int i = 0; i < simulation_seconds; i++)
+    for (int second = 0; second < simulation_seconds; second++)
     {
         sleep(1);
-        for (int i = 1; i < num_nodes + 1; i++)
+        for (int node = 1; node < num_nodes + 1; node++)
         {
             int flag = 0;
             MPI_Status probe_status;
             MPI_Status recv_status;
-            MPI_Iprobe(i, INDICATE_NEIGHBOUR_AVAILABLE_TAG, MPI_COMM_WORLD, &flag, &probe_status);
+            MPI_Iprobe(node, ALERT_TAG, MPI_COMM_WORLD, &flag, &probe_status);
             if (flag)
             {
-                printf("Base station received indication from %d\n", i-1);
-                struct NeighbourAvailableReport available_report;
-                MPI_Recv(&available_report, 1, neighbour_available_report_type, i, INDICATE_NEIGHBOUR_AVAILABLE_TAG, MPI_COMM_WORLD, &recv_status);
+                struct AlertReport report;
+                MPI_Recv(&report, 1, alert_report_type, node, ALERT_TAG, MPI_COMM_WORLD, &recv_status);
+                printf("Base station received indication from %d\n", report.reporting_node);
             }
         }
     }

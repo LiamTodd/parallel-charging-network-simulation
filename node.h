@@ -6,6 +6,7 @@
 #define PORTS_PER_NODE 5
 #define AVAILABILITY_THRESHOLD 2
 #define MAX_NEIGHBOURS 4
+#define MAX_SECOND_ORDER_NEIGHBOURS 8
 #define ALERT_NEIGHBOUR_SIGNAL 100
 #define AVAILABLE 1
 #define UNAVAILABLE 0
@@ -23,6 +24,6 @@ struct TimestampData
     int available_ports;
 };
 
-int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *worker_rank);
+int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *second_order_neighbours, int *worker_rank);
 
-int node_lifecycle(int *neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype neighbour_available_report_type);
+int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype alert_report_type);

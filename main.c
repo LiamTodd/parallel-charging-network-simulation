@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     int global_rank, worker_rank, provided, simulation_seconds;
     MPI_Comm worker_comm, cart_comm;
-    int dims[CARTESIAN_DIMENSIONS], coord[CARTESIAN_DIMENSIONS], neighbours[MAX_NEIGHBOURS];
+    int dims[CARTESIAN_DIMENSIONS], coord[CARTESIAN_DIMENSIONS], neighbours[MAX_NEIGHBOURS], second_order_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
 
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided < MPI_THREAD_MULTIPLE)
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     // node set-up
     if (global_rank != BASE_STATION_RANK)
     {
-        if (node_set_up(&worker_comm, &cart_comm, dims, coord, neighbours, &worker_rank) != 0)
+        if (node_set_up(&worker_comm, &cart_comm, dims, coord, neighbours, second_order_neighbours, &worker_rank) != 0)
         {
             printf("Error setting up node.\n");
             return 1;
@@ -45,25 +45,25 @@ int main(int argc, char *argv[])
     }
 
     // define data types
-    MPI_Datatype neighbour_available_report_type;
-    int blockLengths[5] = {1, 1, 4, 4, 1};
-    MPI_Aint offsets[5];
-    MPI_Datatype types[5] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT};
+    MPI_Datatype alert_report_type;
+    int block_lengths[6] = {1, 1, 4, 4, 1, 8};
+    MPI_Aint offsets[6];
+    MPI_Datatype types[6] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT};
+    offsets[0] = offsetof(struct AlertReport, reporting_node);
+    offsets[1] = offsetof(struct AlertReport, reporting_node_availability);
+    offsets[2] = offsetof(struct AlertReport, neighbours);
+    offsets[3] = offsetof(struct AlertReport, neighbours_availability);
+    offsets[4] = offsetof(struct AlertReport, messages_exchanged_between_nodes);
+    offsets[5] = offsetof(struct AlertReport, second_order_neighbours);
+    MPI_Type_create_struct(6, block_lengths, offsets, types, &alert_report_type);
+    MPI_Type_commit(&alert_report_type);
 
-    offsets[0] = offsetof(struct NeighbourAvailableReport, reporting_node);
-    offsets[1] = offsetof(struct NeighbourAvailableReport, reporting_node_availability);
-    offsets[2] = offsetof(struct NeighbourAvailableReport, neighbours);
-    offsets[3] = offsetof(struct NeighbourAvailableReport, available_neighbours);
-    offsets[4] = offsetof(struct NeighbourAvailableReport, messages_exchanged_between_nodes);
-
-    MPI_Type_create_struct(5, blockLengths, offsets, types, &neighbour_available_report_type);
-    MPI_Type_commit(&neighbour_available_report_type);
     MPI_Barrier(MPI_COMM_WORLD);
 
     // lifecycle loops
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, neighbour_available_report_type) != 0)
+        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, alert_report_type) != 0)
         {
             printf("Error in base station lifecycle.\n");
             return 1;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if (node_lifecycle(neighbours, &cart_comm, worker_rank, neighbour_available_report_type) != 0)
+        if (node_lifecycle(neighbours, second_order_neighbours, &cart_comm, worker_rank, alert_report_type) != 0)
         {
             printf("Error in node lifecycle.\n");
             return 1;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         MPI_Comm_free(&cart_comm);
         MPI_Comm_free(&worker_comm);
     }
-    MPI_Type_free(&neighbour_available_report_type);
+    MPI_Type_free(&alert_report_type);
     MPI_Finalize();
 
     return 0;

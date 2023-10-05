@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "shared_constants.h": "c"
+        "shared_constants.h": "c",
+        "base_station.h": "c",
+        "node.h": "c"
     }
 }
