@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include <time.h>
 #include "base_station.h"
 #include "node.h"
 #include "shared_constants.h"
@@ -11,6 +12,17 @@ int main(int argc, char *argv[])
     int global_rank, worker_rank, provided, simulation_seconds;
     MPI_Comm worker_comm, cart_comm;
     int dims[CARTESIAN_DIMENSIONS], coord[CARTESIAN_DIMENSIONS], neighbours[MAX_NEIGHBOURS], second_order_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
+    FILE *fp;
+    time_t clock_time;
+    struct tm *tm_info;
+    char time_str[20];
+
+    time(&clock_time);
+    tm_info = localtime(&clock_time);
+    strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
+    fp = fopen(LOG_FILE_NAME, "w");
+    fprintf(fp, "Simulation start: %s\n", time_str);
+    fclose(fp);
 
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     if (provided < MPI_THREAD_MULTIPLE)
@@ -30,6 +42,9 @@ int main(int argc, char *argv[])
             printf("Error setting up base station.\n");
             return 1;
         };
+        fp = fopen(LOG_FILE_NAME, "a");
+        fprintf(fp, "Node grid dimensions: %dx%d\n", dims[0], dims[1]);
+        fclose(fp);
     }
     // broadcast dims to workers
     MPI_Bcast(&dims, CARTESIAN_DIMENSIONS, MPI_INT, BASE_STATION_RANK, MPI_COMM_WORLD);
@@ -41,21 +56,26 @@ int main(int argc, char *argv[])
             printf("Error setting up node.\n");
             return 1;
         }
-        // printf("Node global rank: %d\nNode grid rank: %d\nNode cartesian coordinates: %d, %d\nNeighbours: %d %d %d %d\n\n", global_rank, worker_rank, coord[0], coord[1], neighbours[0], neighbours[1], neighbours[2], neighbours[3]);
     }
 
     // define data types
     MPI_Datatype alert_report_type;
-    int block_lengths[6] = {1, 1, 4, 4, 1, 8};
-    MPI_Aint offsets[6];
-    MPI_Datatype types[6] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT};
+    int block_lengths[11] = {1, 1, 4, 4, 1, 8, 1, 20, 1, 1, 1};
+    MPI_Aint offsets[11];
+    MPI_Datatype types[11] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_CHAR, MPI_INT, MPI_INT, MPI_INT};
     offsets[0] = offsetof(struct AlertReport, reporting_node);
     offsets[1] = offsetof(struct AlertReport, reporting_node_availability);
     offsets[2] = offsetof(struct AlertReport, neighbours);
     offsets[3] = offsetof(struct AlertReport, neighbours_availability);
     offsets[4] = offsetof(struct AlertReport, messages_exchanged_between_nodes);
     offsets[5] = offsetof(struct AlertReport, second_order_neighbours);
-    MPI_Type_create_struct(6, block_lengths, offsets, types, &alert_report_type);
+    offsets[6] = offsetof(struct AlertReport, iteration);
+    offsets[7] = offsetof(struct AlertReport, time_str);
+    offsets[8] = offsetof(struct AlertReport, neighbours_count);
+    offsets[9] = offsetof(struct AlertReport, row);
+    offsets[10] = offsetof(struct AlertReport, col);
+
+    MPI_Type_create_struct(11, block_lengths, offsets, types, &alert_report_type);
     MPI_Type_commit(&alert_report_type);
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -63,11 +83,17 @@ int main(int argc, char *argv[])
     // lifecycle loops
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, alert_report_type) != 0)
+        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, alert_report_type, dims[1]) != 0)
         {
             printf("Error in base station lifecycle.\n");
             return 1;
         }
+        time(&clock_time);
+        tm_info = localtime(&clock_time);
+        strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
+        fp = fopen(LOG_FILE_NAME, "a");
+        fprintf(fp, "\nSimulation end: %s\n", time_str);
+        fclose(fp);
     }
     else
     {

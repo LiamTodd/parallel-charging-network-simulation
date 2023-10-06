@@ -3,10 +3,6 @@
 #define DISP 1
 #define CARTESIAN_DIMENSIONS 2
 #define MAX_TIMESTAMP_DATAPOINTS 5
-#define PORTS_PER_NODE 5
-#define AVAILABILITY_THRESHOLD 2
-#define MAX_NEIGHBOURS 4
-#define MAX_SECOND_ORDER_NEIGHBOURS 8
 #define ALERT_NEIGHBOUR_SIGNAL 100
 #define AVAILABLE 1
 #define UNAVAILABLE 0
@@ -15,12 +11,7 @@
 
 struct TimestampData
 {
-    int year;
-    int month;
-    int day;
-    int hours;
-    int minutes;
-    int seconds;
+    char time_str[20];
     int available_ports;
 };
 

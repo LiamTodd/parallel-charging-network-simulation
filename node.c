@@ -89,15 +89,18 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
     int queue_index = 0;
     time_t current_time;
     struct tm *time_info;
+    char time_str[20];
+    int coord[CARTESIAN_DIMENSIONS];
+
+    MPI_Cart_coords(*cart_comm, worker_rank, CARTESIAN_DIMENSIONS, coord);
+
     time(&current_time);
     time_info = localtime(&current_time);
-    int year = time_info->tm_year + 1900; // Year starts from 1900, add 1900
-    int month = time_info->tm_mon + 1;    // Months are 0-based, add 1
-    int day = time_info->tm_mday;
-    int hours = time_info->tm_hour;
-    int minutes = time_info->tm_min;
-    int seconds = time_info->tm_sec;
-    struct TimestampData new_entry = {year, month, day, hours, minutes, seconds, PORTS_PER_NODE}; // initialise all ports to be free
+    strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", time_info);
+    struct TimestampData new_entry;
+    new_entry.available_ports = PORTS_PER_NODE; // initialise all ports to be free
+    strcpy(new_entry.time_str, time_str);
+
     timestamp_queue[queue_index] = new_entry;
 
     // each port gets one thread, one thread dedicated to sending alerts, one dedicated to receiving alerts, one as a master clock
@@ -114,11 +117,13 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
             {
                 sleep(1);
                 int current_availability;
+                char current_time_str[20];
 #pragma omp critical
                 {
                     current_availability = timestamp_queue[queue_index].available_ports;
+                    strcpy(current_time_str, timestamp_queue[queue_index].time_str);
                 }
-                if (current_availability < AVAILABILITY_THRESHOLD)
+                if (current_availability <= AVAILABILITY_THRESHOLD)
                 {
                     // alert neighbours
                     int alert_neighbour_signal = ALERT_NEIGHBOUR_SIGNAL;
@@ -150,11 +155,16 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                             }
                         }
                     }
+                    int expect_reply = 1;
                     // prepare report for base station
                     struct AlertReport alert_report;
                     alert_report.reporting_node = worker_rank;
                     alert_report.reporting_node_availability = current_availability;
                     alert_report.messages_exchanged_between_nodes = 0;
+                    alert_report.neighbours_count = 0;
+                    alert_report.row = coord[0];
+                    alert_report.col = coord[1];
+                    strcpy(alert_report.time_str, current_time_str);
                     for (i = 0; i < MAX_NEIGHBOURS; i++)
                     {
 
@@ -164,7 +174,13 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                         {
                             // 2 messages exchanged with each neighbour
                             alert_report.messages_exchanged_between_nodes += 2;
+                            alert_report.neighbours_count++;
                             alert_report.neighbours_availability[i] = neighbour_availability[i];
+                            if (neighbour_availability[i] > AVAILABILITY_THRESHOLD)
+                            {
+                                // node has available neighbours, don't need response from base station
+                                expect_reply = 0;
+                            }
                         }
                         else
                         {
@@ -178,9 +194,14 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                     }
                     if (exit_flag == 0)
                     {
-                        printf("Node %d alerting base station\n", worker_rank);
                         // indicate to base station that the node is occupied, but its neighbours have availability
                         MPI_Send(&alert_report, 1, alert_report_type, BASE_STATION_RANK, ALERT_TAG, MPI_COMM_WORLD);
+                        if (expect_reply)
+                        {
+                            MPI_Status recv_status;
+                            int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
+                            MPI_Recv(&available_so_neighbours, MAX_SECOND_ORDER_NEIGHBOURS, MPI_INT, BASE_STATION_RANK, BASE_STATION_REPLY_TAG, MPI_COMM_WORLD, &recv_status);
+                        }
                     }
                 }
             }
@@ -228,17 +249,14 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                 sleep(1);
 
                 // update circular queue
-                time_t current_time;
-                struct tm *time_info;
                 time(&current_time);
                 time_info = localtime(&current_time);
-                int year = time_info->tm_year + 1900; // Year starts from 1900, add 1900
-                int month = time_info->tm_mon + 1;    // Months are 0-based, add 1
-                int day = time_info->tm_mday;
-                int hours = time_info->tm_hour;
-                int minutes = time_info->tm_min;
-                int seconds = time_info->tm_sec;
-                struct TimestampData new_entry = {year, month, day, hours, minutes, seconds, 5}; // initialise all ports to be free
+                strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", time_info);
+
+                struct TimestampData new_entry;
+                new_entry.available_ports = PORTS_PER_NODE; // initialise all ports to be free
+                strcpy(new_entry.time_str, time_str);
+
 #pragma omp critical
                 {
                     queue_index = (queue_index + 1) % MAX_TIMESTAMP_DATAPOINTS;
@@ -255,7 +273,6 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                     MPI_Recv(&termination_signal, 1, MPI_INT, BASE_STATION_RANK, TERMINATION_TAG, MPI_COMM_WORLD, &recv_status);
                     if (termination_signal == TERMINATION_SIGNAL)
                     {
-                        printf("TERMINATION: Node %d Received termination signal from base station\n", worker_rank);
 #pragma omp atomic write
                         exit_flag = 1;
                     }
@@ -271,7 +288,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                 unsigned int seed = thread_num * (worker_rank + 1) + time(NULL);
 #pragma omp critical
                 {
-                    // a port has a 1/3 chance of being unavailable at any timestamp
+                    // a port has a 1/2 chance of being unavailable at any timestamp
                     if (rand_r(&seed) % 2 == 0 && timestamp_queue[queue_index].available_ports > 0)
                     {
                         timestamp_queue[queue_index].available_ports--;
