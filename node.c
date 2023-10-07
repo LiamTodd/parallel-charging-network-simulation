@@ -8,12 +8,7 @@
 #include "node.h"
 #include "shared_constants.h"
 #include "shared_structs.h"
-
-// function prototypes
-void charging_port_iteration(int thread_num, int worker_rank, struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index);
-void node_master_clock_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *exit_flag);
-void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm);
-void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int availability_threshold, int *exit_flag, int worker_rank, int *second_order_neighbours, MPI_Datatype alert_report_type);
+#include "base_station.h"
 
 int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *second_order_neighbours, int *worker_rank)
 {
@@ -92,7 +87,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
 {
     // set up shared struct for current timestamp
     struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
-    int queue_index = 0;
+    int queue_index = 0, thread_num;
     time_t current_time;
     struct tm *time_info;
     char time_str[20];
@@ -112,7 +107,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
 
 #pragma omp parallel shared(timestamp_queue, queue_index, neighbours, worker_rank, cart_comm, exit_flag)
     {
-        int thread_num = omp_get_thread_num();
+        thread_num = omp_get_thread_num();
         if (thread_num == 0)
         {
             // thread 0 handles tallying its own availability
@@ -128,7 +123,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
             // thread 1 periodically probes neighbours for alerts and responds to them
             while (exit_flag == 0)
             {
-                node_neighbour_probe_iteration(timestamp_queue, &queue_index, neighbours, cart_comm);
+                node_neighbour_probe_iteration(timestamp_queue, &queue_index, neighbours, cart_comm, &exit_flag);
             }
         }
         else if (thread_num == 2)
@@ -178,12 +173,12 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
     if (current_availability <= availability_threshold)
     {
         // alert neighbours
+        start_clock = clock();
         for (i = 0; i < MAX_NEIGHBOURS; i++)
         {
             if (neighbours[i] != MPI_PROC_NULL)
             {
                 MPI_Status recv_status;
-                start_clock = clock();
                 MPI_Send(&alert_neighbour_signal, 1, MPI_INT, neighbours[i], NEIGHBOUR_ALERT_TAG, *cart_comm);
                 time(&wait_start);
                 time(&wait_current);
@@ -202,9 +197,10 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
                         time(&wait_current);
                     }
                 }
-                end_clock = clock();
             }
         }
+
+        end_clock = clock();
         // prepare report for base station
         alert_report.reporting_node = worker_rank;
         alert_report.reporting_node_availability = current_availability;
@@ -217,7 +213,6 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
         strcpy(alert_report.time_str, current_time_str);
         for (i = 0; i < MAX_NEIGHBOURS; i++)
         {
-
             alert_report.neighbours[i] = neighbours[i];
 
             if (neighbours[i] != MPI_PROC_NULL)
@@ -249,14 +244,29 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
             MPI_Send(&alert_report, 1, alert_report_type, BASE_STATION_RANK, ALERT_TAG, MPI_COMM_WORLD);
             if (expect_reply)
             {
-                MPI_Status recv_status;
-                MPI_Recv(&available_so_neighbours, MAX_SECOND_ORDER_NEIGHBOURS, MPI_INT, BASE_STATION_RANK, BASE_STATION_REPLY_TAG, MPI_COMM_WORLD, &recv_status);
+                time(&wait_start);
+                time(&wait_current);
+                MPI_Status probe_status;
+                flag = 0;
+                while (wait_current - wait_start < MAX_WAIT_TIME && *exit_flag == 0)
+                {
+                    MPI_Iprobe(BASE_STATION_RANK, BASE_STATION_REPLY_TAG, MPI_COMM_WORLD, &flag, &probe_status);
+                    if (flag)
+                    {
+                        MPI_Status recv_status;
+                        MPI_Recv(&available_so_neighbours, MAX_SECOND_ORDER_NEIGHBOURS, MPI_INT, BASE_STATION_RANK, BASE_STATION_REPLY_TAG, MPI_COMM_WORLD, &recv_status);
+                    }
+                    else
+                    {
+                        time(&wait_current);
+                    }
+                }
             }
         }
     }
 }
 
-void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm)
+void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int *exit_flag)
 {
     sleep(1);
     int current_availability, i, flag, alert_signal;
@@ -267,13 +277,14 @@ void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIM
     {
         current_availability = timestamp_queue[*queue_index].available_ports;
     }
+
     for (i = 0; i < MAX_NEIGHBOURS; i++)
     {
         if (neighbours[i] != MPI_PROC_NULL)
         {
             flag = 0;
             MPI_Iprobe(neighbours[i], NEIGHBOUR_ALERT_TAG, *cart_comm, &flag, &probe_status);
-            if (flag)
+            if (flag && *exit_flag == 0)
             {
                 alert_signal = -1;
                 MPI_Recv(&alert_signal, 1, MPI_INT, neighbours[i], NEIGHBOUR_ALERT_TAG, *cart_comm, &recv_status);
@@ -316,7 +327,9 @@ void node_master_clock_iteration(struct TimestampData timestamp_queue[MAX_TIMEST
     MPI_Iprobe(BASE_STATION_RANK, 0, MPI_COMM_WORLD, &flag, &probe_status);
     if (flag)
     {
+
         MPI_Recv(&termination_signal, 1, MPI_INT, BASE_STATION_RANK, TERMINATION_TAG, MPI_COMM_WORLD, &recv_status);
+
         if (termination_signal == TERMINATION_SIGNAL)
         {
 #pragma omp atomic write
