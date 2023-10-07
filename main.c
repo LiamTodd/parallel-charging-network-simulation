@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
             return 1;
         };
         fp = fopen(LOG_FILE_NAME, "a");
-        fprintf(fp, "Node grid dimensions: %dx%d\n", dims[0], dims[1]);
+        fprintf(fp, "Node grid dimensions: %d X %d\n", dims[0], dims[1]);
         fclose(fp);
     }
     // broadcast dims to workers
@@ -60,9 +60,9 @@ int main(int argc, char *argv[])
 
     // define data types
     MPI_Datatype alert_report_type;
-    int block_lengths[11] = {1, 1, 4, 4, 1, 8, 1, 20, 1, 1, 1};
-    MPI_Aint offsets[11];
-    MPI_Datatype types[11] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_CHAR, MPI_INT, MPI_INT, MPI_INT};
+    int block_lengths[12] = {1, 1, 4, 4, 1, 8, 1, 20, 1, 1, 1, 1};
+    MPI_Aint offsets[12];
+    MPI_Datatype types[12] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_CHAR, MPI_INT, MPI_INT, MPI_INT, MPI_DOUBLE};
     offsets[0] = offsetof(struct AlertReport, reporting_node);
     offsets[1] = offsetof(struct AlertReport, reporting_node_availability);
     offsets[2] = offsetof(struct AlertReport, neighbours);
@@ -74,8 +74,9 @@ int main(int argc, char *argv[])
     offsets[8] = offsetof(struct AlertReport, neighbours_count);
     offsets[9] = offsetof(struct AlertReport, row);
     offsets[10] = offsetof(struct AlertReport, col);
+    offsets[11] = offsetof(struct AlertReport, node_comm_time);
 
-    MPI_Type_create_struct(11, block_lengths, offsets, types, &alert_report_type);
+    MPI_Type_create_struct(12, block_lengths, offsets, types, &alert_report_type);
     MPI_Type_commit(&alert_report_type);
 
     MPI_Barrier(MPI_COMM_WORLD);

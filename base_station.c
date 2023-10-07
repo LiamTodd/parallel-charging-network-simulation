@@ -57,6 +57,8 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
     struct tm *log_time_info;
     time_t log_time;
     FILE *fp;
+    clock_t start_clock, end_clock;
+
     fp = fopen(LOG_FILE_NAME, "a");
 
     for (int i = 0; i < iterations; i++)
@@ -76,7 +78,9 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
             {
                 fprintf(fp, "\n\tREPORT RECEIVED (Iteration %d):\n", i);
                 struct AlertReport report;
+                start_clock = clock();
                 MPI_Recv(&report, 1, alert_report_type, node, ALERT_TAG, MPI_COMM_WORLD, &recv_status);
+                end_clock = clock();
                 report.iteration = i;
                 report_list[report_list_index] = report;
                 if (report_list_index > MAX_REPORTS)
@@ -133,11 +137,13 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     }
                 }
                 fprintf(fp, "\n\t\tAvailable nearby nodes (no report received in last 20 iterations):");
+                int nearby_available = 0;
                 for (int l = 0; l < MAX_SECOND_ORDER_NEIGHBOURS; l++)
                 {
                     if (available_so_neighbours[l] != MPI_PROC_NULL)
                     {
                         fprintf(fp, " %d,", available_so_neighbours[l]);
+                        nearby_available = 1;
                     }
                 }
                 fprintf(fp, "\n");
@@ -145,9 +151,27 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                 {
                     // send second-order neighbour availability back to reporting node
                     MPI_Send(&available_so_neighbours, MAX_SECOND_ORDER_NEIGHBOURS, MPI_INT, node, BASE_STATION_REPLY_TAG, MPI_COMM_WORLD);
+                    end_clock = clock();
                 }
-                fprintf(fp, "\t\tCommunication time: %d\n", 0);
+                fprintf(fp, "\t\tCommunication time between nodes: %.5fms\n", report.node_comm_time * 1000);
+                fprintf(fp, "\t\tCommunincation time between base station and reporting node: %.5fms\n", (double)(end_clock - start_clock) / CLOCKS_PER_SEC * 1000);
                 fprintf(fp, "\t\tTotal messages sent between reporting node and base station: %d\n", send_reply == 1 ? 2 : 1);
+                fprintf(fp, "\t\tAction taken by base station following report: ");
+                if (send_reply)
+                {
+                    if (nearby_available)
+                    {
+                        fprintf(fp, "Replied to reporting node: Notifying of available nearby nodes.\n");
+                    }
+                    else
+                    {
+                        fprintf(fp, "Replied to reporting node: Notifying that no nearby nodes are available.\n");
+                    }
+                }
+                else
+                {
+                    fprintf(fp, "Did not reply to reporting node (its neighbour(s) had sufficient availability).\n");
+                }
 
                 report_list_index++;
             }

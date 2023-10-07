@@ -91,6 +91,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
     struct tm *time_info;
     char time_str[20];
     int coord[CARTESIAN_DIMENSIONS];
+    clock_t start_clock, end_clock;
 
     MPI_Cart_coords(*cart_comm, worker_rank, CARTESIAN_DIMENSIONS, coord);
 
@@ -134,6 +135,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                         if (neighbours[i] != MPI_PROC_NULL)
                         {
                             MPI_Status recv_status;
+                            start_clock = clock();
                             MPI_Send(&alert_neighbour_signal, 1, MPI_INT, neighbours[i], NEIGHBOUR_ALERT_TAG, *cart_comm);
                             time_t wait_start, wait_current;
                             time(&wait_start);
@@ -153,6 +155,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                                     time(&wait_current);
                                 }
                             }
+                            end_clock = clock();
                         }
                     }
                     int expect_reply = 1;
@@ -164,6 +167,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                     alert_report.neighbours_count = 0;
                     alert_report.row = coord[0];
                     alert_report.col = coord[1];
+                    alert_report.node_comm_time = (double)(end_clock - start_clock) / CLOCKS_PER_SEC;
                     strcpy(alert_report.time_str, current_time_str);
                     for (i = 0; i < MAX_NEIGHBOURS; i++)
                     {
@@ -288,8 +292,8 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                 unsigned int seed = thread_num * (worker_rank + 1) + time(NULL);
 #pragma omp critical
                 {
-                    // a port has a 1/2 chance of being unavailable at any timestamp
-                    if (rand_r(&seed) % 2 == 0 && timestamp_queue[queue_index].available_ports > 0)
+                    // a port has a 4/5 chance of being unavailable at any timestamp
+                    if (rand_r(&seed) % 5 != 0 && timestamp_queue[queue_index].available_ports > 0)
                     {
                         timestamp_queue[queue_index].available_ports--;
                     }

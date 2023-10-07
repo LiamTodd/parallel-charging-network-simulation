@@ -11,4 +11,5 @@ struct AlertReport
     int neighbours_count;
     int row;
     int col;
+    double node_comm_time;
 };
