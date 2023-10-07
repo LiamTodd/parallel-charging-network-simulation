@@ -7,11 +7,11 @@
 #include "shared_constants.h"
 #include "shared_structs.h"
 
-int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_seconds)
+int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_seconds, int *availability_threshold)
 {
     int m, n, processors;
     // base station: read in command-line args
-    if (argc != 4)
+    if (argc != 5)
     {
         printf("Error: Invalid number of arguments.\n");
         return 1;
@@ -19,6 +19,7 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
     m = atoi(argv[1]);
     n = atoi(argv[2]);
     *simulation_seconds = atoi(argv[3]);
+    *availability_threshold = atoi(argv[4]);
     if (m == 0 || n == 0)
     {
         printf("Error: Invalid values of n and m. n and m must be positive integers.\n");
@@ -27,6 +28,12 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
     if (*simulation_seconds < 1)
     {
         printf("Error: Invalid value of simulation seconds. Must be a positive integer.\n");
+        return 1;
+    }
+    if (*availability_threshold < 0 || *availability_threshold > PORTS_PER_NODE)
+    {
+        printf("Error: Invalid availability threshold. Must be between 0 and PORTS_PER_NODE.\n");
+        return 1;
     }
     // ensure that processors can accommodate dimensions
     MPI_Comm_size(MPI_COMM_WORLD, &processors);
@@ -40,7 +47,7 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
     return 0;
 }
 
-int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols)
+int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold)
 {
     struct AlertReport report_list[MAX_REPORTS];
     int report_list_index = 0;
@@ -80,7 +87,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                 time(&log_time);
                 log_time_info = localtime(&log_time);
                 strftime(time_log_str, sizeof(time_log_str), "%Y-%m-%d %H:%M:%S", log_time_info);
-                fprintf(fp, "\t\tReporting node: %d\n\t\tAlert time: %s\n\t\tLogged time: %s\n\t\tAdjacent nodes: %d\n\t\tAvailability threshold: %d\n", report.reporting_node, report.time_str, time_log_str, report.neighbours_count, AVAILABILITY_THRESHOLD);
+                fprintf(fp, "\t\tReporting node: %d\n\t\tAlert time: %s\n\t\tLogged time: %s\n\t\tAdjacent nodes: %d\n\t\tAvailability threshold: %d\n", report.reporting_node, report.time_str, time_log_str, report.neighbours_count, availability_threshold);
                 fprintf(fp, "\n\t\t%-15s %-15s %-15s %-15s %-15s\n", "Reporting Node", "Row Coord", "Col Coord", "Total Ports", "Available Ports");
                 fprintf(fp, "\t\t%-15d %-15d %-15d %-15d %-15d\n", report.reporting_node, report.reporting_node / cols, report.reporting_node % cols, PORTS_PER_NODE, report.reporting_node_availability);
                 fprintf(fp, "\n\t\t%-15s %-15s %-15s %-15s %-15s\n", "Adjacent Node", "Row Coord", "Col Coord", "Total Ports", "Available Ports");
@@ -90,7 +97,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     if (report.neighbours[j] != MPI_PROC_NULL)
                     {
                         fprintf(fp, "\t\t%-15d %-15d %-15d %-15d %-15d\n", report.neighbours[j], report.neighbours[j] / cols, report.neighbours[j] % cols, PORTS_PER_NODE, report.neighbours_availability[j]);
-                        if (report.neighbours_availability[j] > AVAILABILITY_THRESHOLD)
+                        if (report.neighbours_availability[j] > availability_threshold)
                         {
                             // no need to respond to node, as at least one of its neighbours have sufficient availability
                             send_reply = 0;

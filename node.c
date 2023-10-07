@@ -82,7 +82,7 @@ int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coor
     return 0;
 }
 
-int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype alert_report_type)
+int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart_comm, int worker_rank, MPI_Datatype alert_report_type, int availability_threshold)
 {
     // set up shared struct for current timestamp
     struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
@@ -123,7 +123,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                     current_availability = timestamp_queue[queue_index].available_ports;
                     strcpy(current_time_str, timestamp_queue[queue_index].time_str);
                 }
-                if (current_availability <= AVAILABILITY_THRESHOLD)
+                if (current_availability <= availability_threshold)
                 {
                     // alert neighbours
                     int alert_neighbour_signal = ALERT_NEIGHBOUR_SIGNAL;
@@ -176,7 +176,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
                             alert_report.messages_exchanged_between_nodes += 2;
                             alert_report.neighbours_count++;
                             alert_report.neighbours_availability[i] = neighbour_availability[i];
-                            if (neighbour_availability[i] > AVAILABILITY_THRESHOLD)
+                            if (neighbour_availability[i] > availability_threshold)
                             {
                                 // node has available neighbours, don't need response from base station
                                 expect_reply = 0;

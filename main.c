@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-    int global_rank, worker_rank, provided, simulation_seconds;
+    int global_rank, worker_rank, provided, simulation_seconds, availability_threshold;
     MPI_Comm worker_comm, cart_comm;
     int dims[CARTESIAN_DIMENSIONS], coord[CARTESIAN_DIMENSIONS], neighbours[MAX_NEIGHBOURS], second_order_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
     FILE *fp;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     // base station set-up
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_set_up(argc, argv, dims, &simulation_seconds) != 0)
+        if (base_station_set_up(argc, argv, dims, &simulation_seconds, &availability_threshold) != 0)
         {
             printf("Error setting up base station.\n");
             return 1;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     // lifecycle loops
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, alert_report_type, dims[1]) != 0)
+        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, alert_report_type, dims[1], availability_threshold) != 0)
         {
             printf("Error in base station lifecycle.\n");
             return 1;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if (node_lifecycle(neighbours, second_order_neighbours, &cart_comm, worker_rank, alert_report_type) != 0)
+        if (node_lifecycle(neighbours, second_order_neighbours, &cart_comm, worker_rank, alert_report_type, availability_threshold) != 0)
         {
             printf("Error in node lifecycle.\n");
             return 1;
