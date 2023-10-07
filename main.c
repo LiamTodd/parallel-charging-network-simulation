@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
     }
     // broadcast dims to workers
     MPI_Bcast(&dims, CARTESIAN_DIMENSIONS, MPI_INT, BASE_STATION_RANK, MPI_COMM_WORLD);
+    MPI_Bcast(&availability_threshold, 1, MPI_INT, BASE_STATION_RANK, MPI_COMM_WORLD);
     // node set-up
     if (global_rank != BASE_STATION_RANK)
     {
@@ -60,9 +61,9 @@ int main(int argc, char *argv[])
 
     // define data types
     MPI_Datatype alert_report_type;
-    int block_lengths[12] = {1, 1, 4, 4, 1, 8, 1, 20, 1, 1, 1, 1};
-    MPI_Aint offsets[12];
-    MPI_Datatype types[12] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_CHAR, MPI_INT, MPI_INT, MPI_INT, MPI_DOUBLE};
+    int block_lengths[13] = {1, 1, 4, 4, 1, 8, 1, 20, 1, 1, 1, 1, 1};
+    MPI_Aint offsets[13];
+    MPI_Datatype types[13] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_CHAR, MPI_INT, MPI_INT, MPI_INT, MPI_DOUBLE, MPI_INT};
     offsets[0] = offsetof(struct AlertReport, reporting_node);
     offsets[1] = offsetof(struct AlertReport, reporting_node_availability);
     offsets[2] = offsetof(struct AlertReport, neighbours);
@@ -75,8 +76,8 @@ int main(int argc, char *argv[])
     offsets[9] = offsetof(struct AlertReport, row);
     offsets[10] = offsetof(struct AlertReport, col);
     offsets[11] = offsetof(struct AlertReport, node_comm_time);
-
-    MPI_Type_create_struct(12, block_lengths, offsets, types, &alert_report_type);
+    offsets[12] = offsetof(struct AlertReport, type);
+    MPI_Type_create_struct(13, block_lengths, offsets, types, &alert_report_type);
     MPI_Type_commit(&alert_report_type);
 
     MPI_Barrier(MPI_COMM_WORLD);

@@ -50,9 +50,8 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
 int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold)
 {
     struct AlertReport report_list[MAX_REPORTS];
-    int report_list_index = 0;
-    int iterations = simulation_seconds * 10;
-    int tenth_of_second = 100000;
+    int report_list_index = 0, iterations = simulation_seconds * 10, tenth_of_second = 100000, i, j, k, l, probe_flag, send_reply, nearby_available;
+    int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
     char time_log_str[20];
     struct tm *log_time_info;
     time_t log_time;
@@ -61,7 +60,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
 
     fp = fopen(LOG_FILE_NAME, "a");
 
-    for (int i = 0; i < iterations; i++)
+    for (i = 0; i < iterations; i++)
     {
         if (report_list_index > MAX_REPORTS)
         {
@@ -70,13 +69,12 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
         usleep(tenth_of_second);
         for (int node = 1; node < num_nodes + 1; node++)
         {
-            int flag = 0;
+            probe_flag = 0;
             MPI_Status probe_status;
             MPI_Status recv_status;
-            MPI_Iprobe(node, ALERT_TAG, MPI_COMM_WORLD, &flag, &probe_status);
-            if (flag)
+            MPI_Iprobe(node, ALERT_TAG, MPI_COMM_WORLD, &probe_flag, &probe_status);
+            if (probe_flag)
             {
-                fprintf(fp, "\n\tREPORT RECEIVED (Iteration %d):\n", i);
                 struct AlertReport report;
                 start_clock = clock();
                 MPI_Recv(&report, 1, alert_report_type, node, ALERT_TAG, MPI_COMM_WORLD, &recv_status);
@@ -88,6 +86,15 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     printf("Max Reports Reached. Exiting.\n");
                     break;
                 }
+                fprintf(fp, "\n\tMESSAGE RECEIVED (Iteration %d):\n", i);
+                if (report.type == REPORT_TYPE)
+                {
+                    fprintf(fp, "\tMessage type: REPORT\n");
+                }
+                else if (report.type == ALERT_TYPE)
+                {
+                    fprintf(fp, "\tMessage type: ALERT\n");
+                }
                 time(&log_time);
                 log_time_info = localtime(&log_time);
                 strftime(time_log_str, sizeof(time_log_str), "%Y-%m-%d %H:%M:%S", log_time_info);
@@ -95,8 +102,8 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                 fprintf(fp, "\n\t\t%-15s %-15s %-15s %-15s %-15s\n", "Reporting Node", "Row Coord", "Col Coord", "Total Ports", "Available Ports");
                 fprintf(fp, "\t\t%-15d %-15d %-15d %-15d %-15d\n", report.reporting_node, report.reporting_node / cols, report.reporting_node % cols, PORTS_PER_NODE, report.reporting_node_availability);
                 fprintf(fp, "\n\t\t%-15s %-15s %-15s %-15s %-15s\n", "Adjacent Node", "Row Coord", "Col Coord", "Total Ports", "Available Ports");
-                int send_reply = 1;
-                for (int j = 0; j < MAX_NEIGHBOURS; j++)
+                send_reply = 1;
+                for (j = 0; j < MAX_NEIGHBOURS; j++)
                 {
                     if (report.neighbours[j] != MPI_PROC_NULL)
                     {
@@ -111,8 +118,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                 fprintf(fp, "\n\t\t%-40s %-15s %-15s\n", "Nearby Nodes (second order neighbours)", "Row Coord", "Col Coord");
 
                 // check availability of second-order neighbours
-                int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
-                for (int k = 0; k < MAX_SECOND_ORDER_NEIGHBOURS; k++)
+                for (k = 0; k < MAX_SECOND_ORDER_NEIGHBOURS; k++)
                 {
                     if (report.second_order_neighbours[k] != MPI_PROC_NULL)
                     {
@@ -137,8 +143,8 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     }
                 }
                 fprintf(fp, "\n\t\tAvailable nearby nodes (no report received in last 20 iterations):");
-                int nearby_available = 0;
-                for (int l = 0; l < MAX_SECOND_ORDER_NEIGHBOURS; l++)
+                nearby_available = 0;
+                for (l = 0; l < MAX_SECOND_ORDER_NEIGHBOURS; l++)
                 {
                     if (available_so_neighbours[l] != MPI_PROC_NULL)
                     {

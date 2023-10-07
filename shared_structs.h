@@ -12,4 +12,5 @@ struct AlertReport
     int row;
     int col;
     double node_comm_time;
+    int type;
 };
