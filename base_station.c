@@ -51,7 +51,7 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
 int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold)
 {
     struct AlertReport report_list[MAX_REPORTS];
-    int report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num, alert_count = 0, report_count = 0;
+    int termination_signal = TERMINATION_SIGNAL, so_neighbour, check_index, current_iteration, check_iteration, report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num, alert_count = 0, report_count = 0;
     int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
     char time_log_str[20];
     struct tm *log_time_info;
@@ -157,10 +157,10 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                             fprintf(fp, "\t\t%-40d %-15d %-15d\n", log_report.second_order_neighbours[k], log_report.second_order_neighbours[k] / cols, log_report.second_order_neighbours[k] % cols);
                         }
                         // see if second-order neighbour has sent a report in the last 20 iterations
-                        int so_neighbour = log_report.second_order_neighbours[k];
-                        int check_index = report_list_logging_index;
-                        int current_iteration = report_list[report_list_logging_index].iteration;
-                        int check_iteration = current_iteration;
+                        so_neighbour = log_report.second_order_neighbours[k];
+                        check_index = report_list_logging_index;
+                        current_iteration = report_list[report_list_logging_index].iteration;
+                        check_iteration = current_iteration;
                         available_so_neighbours[k] = log_report.second_order_neighbours[k];
 
                         // check the past MAX_BACK_CHECK iterations (note that (max) 10 iterations occur per second)
@@ -221,7 +221,6 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
     fprintf(fp, "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n", report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count);
     fprintf(fp, "Checks:\n\ttotal messages received = total messages processed = total report messages + total alert messages\n\ttotal alert messages = total outgoing messages\n");
     fclose(fp);
-    int termination_signal = TERMINATION_SIGNAL;
     for (int i = 1; i < num_nodes + 1; i++)
     {
         MPI_Send(&termination_signal, 1, MPI_INT, i, TERMINATION_TAG, MPI_COMM_WORLD);
