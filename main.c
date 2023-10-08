@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
     offsets[10] = offsetof(struct AlertReport, col);
     offsets[11] = offsetof(struct AlertReport, node_comm_time);
     offsets[12] = offsetof(struct AlertReport, type);
-    offsets[13] = offsetof(struct AlertReport, base_station_comm_start);
-    offsets[14] = offsetof(struct AlertReport, base_station_comm_end);
+    offsets[13] = offsetof(struct AlertReport, report_received);
+    offsets[14] = offsetof(struct AlertReport, report_processed);
 
     MPI_Type_create_struct(15, block_lengths, offsets, types, &alert_report_type);
     MPI_Type_commit(&alert_report_type);

@@ -13,6 +13,6 @@ struct AlertReport
     int col;
     double node_comm_time;
     int type;
-    time_t base_station_comm_start;
-    time_t base_station_comm_end;
+    time_t report_received;
+    time_t report_processed;
 };

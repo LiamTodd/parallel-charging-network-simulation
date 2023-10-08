@@ -51,13 +51,12 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
 int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold)
 {
     struct AlertReport report_list[MAX_REPORTS];
-    int report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, tenth_of_second = 100000, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num;
+    int report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num;
     int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
     char time_log_str[20];
     struct tm *log_time_info;
     time_t log_time;
     FILE *fp;
-    clock_t start_clock;
     struct AlertReport recv_report, log_report;
 
     fp = fopen(LOG_FILE_NAME, "a");
@@ -76,7 +75,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     printf("Max reports reached. Exiting.\n");
                     break;
                 }
-                usleep(tenth_of_second);
+                usleep(LATENCY_TENTH_OF_SECOND);
                 for (node = 1; node < num_nodes + 1; node++)
                 {
                     probe_flag = 0;
@@ -85,8 +84,9 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     MPI_Iprobe(node, ALERT_TAG, MPI_COMM_WORLD, &probe_flag, &probe_status);
                     if (probe_flag)
                     {
-                        start_clock = clock();
                         MPI_Recv(&recv_report, 1, alert_report_type, node, ALERT_TAG, MPI_COMM_WORLD, &recv_status);
+                        recv_report.report_received = clock();
+
                         if (report_list_index + 1 > MAX_REPORTS)
                         {
                             break;
@@ -95,8 +95,6 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                         {
                             report_list_index++;
                             recv_report.iteration = i;
-                            recv_report.base_station_comm_start = start_clock;
-                            recv_report.base_station_comm_end = clock();
                             report_list[report_list_index] = recv_report;
                         }
                     }
@@ -113,7 +111,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
             //
             while (exit_flag == 0 || report_list_index > report_list_logging_index)
             {
-                usleep(tenth_of_second);
+                usleep(LATENCY_TENTH_OF_SECOND);
                 if (report_list_index > report_list_logging_index)
                 {
                     // there is a new report to process
@@ -192,10 +190,10 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     {
                         // send second-order neighbour availability back to reporting node
                         MPI_Send(&available_so_neighbours, MAX_SECOND_ORDER_NEIGHBOURS, MPI_INT, log_report.reporting_node, BASE_STATION_REPLY_TAG, MPI_COMM_WORLD);
-                        log_report.base_station_comm_end = clock();
                     }
-                    fprintf(fp, "\t\tCommunication time between nodes: %.5fms\n", log_report.node_comm_time * 1000);
-                    fprintf(fp, "\t\tCommunincation time between base station and reporting node: %.5fms\n", (double)(log_report.base_station_comm_end - log_report.base_station_comm_start) / CLOCKS_PER_SEC * 1000);
+                    log_report.report_processed = clock();
+                    fprintf(fp, "\t\tCommunication time between nodes: %.5fms\n", log_report.node_comm_time);
+                    fprintf(fp, "\t\tTime between report received and report processed: %.5fms\n", (double)(log_report.report_processed - log_report.report_received) * 1000 / CLOCKS_PER_SEC);
                     fprintf(fp, "\t\tTotal messages sent between reporting node and base station: %d\n", send_reply == 1 ? 2 : 1);
                     fprintf(fp, "\t\tAction taken by base station following report: ");
                     if (send_reply)
@@ -218,6 +216,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
         }
     }
 
+    fprintf(fp, "\nTotal reports received: %d\nTotal reports processed: %d\n", report_list_index + 1, report_list_logging_index + 1);
     fclose(fp);
     int termination_signal = TERMINATION_SIGNAL;
     for (int i = 1; i < num_nodes + 1; i++)

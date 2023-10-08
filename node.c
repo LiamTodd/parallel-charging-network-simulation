@@ -208,7 +208,7 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
         alert_report.neighbours_count = 0;
         alert_report.row = coord[0];
         alert_report.col = coord[1];
-        alert_report.node_comm_time = (double)(end_clock - start_clock) / CLOCKS_PER_SEC;
+        alert_report.node_comm_time = (double)(end_clock - start_clock) * 1000 / CLOCKS_PER_SEC;
         alert_report.type = ALERT_TYPE;
         strcpy(alert_report.time_str, current_time_str);
         for (i = 0; i < MAX_NEIGHBOURS; i++)
@@ -268,7 +268,7 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
 
 void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int *exit_flag)
 {
-    sleep(1);
+    usleep(LATENCY_TENTH_OF_SECOND);
     int current_availability, i, flag, alert_signal;
     MPI_Status probe_status;
     MPI_Status recv_status;
