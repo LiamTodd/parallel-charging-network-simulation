@@ -51,7 +51,7 @@ int base_station_set_up(int argc, char *argv[], int *dims, int *simulation_secon
 int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold)
 {
     struct AlertReport report_list[MAX_REPORTS];
-    int report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num;
+    int report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num, alert_count = 0, report_count = 0;
     int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
     char time_log_str[20];
     struct tm *log_time_info;
@@ -163,8 +163,8 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                         int check_iteration = current_iteration;
                         available_so_neighbours[k] = log_report.second_order_neighbours[k];
 
-                        // check the past 20 iterations (max 10 iterations occur per second)
-                        while (check_iteration > current_iteration - 20 && check_index >= 0)
+                        // check the past MAX_BACK_CHECK iterations (note that (max) 10 iterations occur per second)
+                        while (check_iteration > current_iteration - MAX_BACK_CHECK && check_index >= 0)
                         {
                             if (report_list[check_index].reporting_node == so_neighbour)
                             {
@@ -206,17 +206,20 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                         {
                             fprintf(fp, "Replied to reporting node: Notifying that no nearby nodes are available.\n");
                         }
+                        alert_count++;
                     }
                     else
                     {
                         fprintf(fp, "Did not reply to reporting node (its neighbour(s) had sufficient availability).\n");
+                        report_count++;
                     }
                 }
             }
         }
     }
 
-    fprintf(fp, "\nTotal reports received: %d\nTotal reports processed: %d\n", report_list_index + 1, report_list_logging_index + 1);
+    fprintf(fp, "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n", report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count);
+    fprintf(fp, "Checks:\n\ttotal messages received = total messages processed = total report messages + total alert messages\n\ttotal alert messages = total outgoing messages\n");
     fclose(fp);
     int termination_signal = TERMINATION_SIGNAL;
     for (int i = 1; i < num_nodes + 1; i++)

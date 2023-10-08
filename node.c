@@ -344,8 +344,8 @@ void charging_port_iteration(int thread_num, int worker_rank, struct TimestampDa
     unsigned int seed = thread_num * (worker_rank + 1) + time(NULL);
 #pragma omp critical
     {
-        // a port has a 4/5 chance of being unavailable at any timestamp
-        if (rand_r(&seed) % 5 != 0 && timestamp_queue[*queue_index].available_ports > 0)
+        // a port has a 6/7 chance of being unavailable at any timestamp
+        if (rand_r(&seed) % 7 != 0 && timestamp_queue[*queue_index].available_ports > 0)
         {
             timestamp_queue[*queue_index].available_ports--;
         }
