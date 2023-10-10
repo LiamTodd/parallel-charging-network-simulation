@@ -87,7 +87,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
 {
     // set up shared struct for current timestamp
     struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS];
-    int queue_index = 0, thread_num;
+    int queue_index = 0, thread_num, i, exit_flag = 0;
     time_t current_time;
     struct tm *time_info;
     char time_str[20];
@@ -97,15 +97,18 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
     time_info = localtime(&current_time);
     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", time_info);
     struct TimestampData new_entry;
-    new_entry.available_ports = PORTS_PER_NODE; // initialise all ports to be free
+    // initialise all ports to be free
+    for (i = 0; i < PORTS_PER_NODE; i++)
+    {
+        new_entry.ports[i] = 1;
+    }
     strcpy(new_entry.time_str, time_str);
     timestamp_queue[queue_index] = new_entry;
 
     // each port gets one thread, one thread dedicated to sending alerts, one dedicated to receiving alerts, one as a master clock
-    omp_set_num_threads(PORTS_PER_NODE + 3);
-    int exit_flag = 0;
+    omp_set_num_threads(PORTS_PER_NODE + EXTRA_THREADS);
 
-#pragma omp parallel shared(timestamp_queue, queue_index, neighbours, worker_rank, cart_comm, exit_flag)
+#pragma omp parallel shared(timestamp_queue, queue_index, neighbours, worker_rank, cart_comm, exit_flag) private(thread_num)
     {
         thread_num = omp_get_thread_num();
         if (thread_num == 0)
@@ -151,9 +154,9 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
 
 void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int availability_threshold, int *exit_flag, int worker_rank, int *second_order_neighbours, MPI_Datatype alert_report_type)
 {
-    sleep(1);
+    sleep(TALLY_INTERVAL);
 
-    int alert_neighbour_signal = ALERT_NEIGHBOUR_SIGNAL, current_availability, i, flag, expect_reply = 1;
+    int alert_neighbour_signal = ALERT_NEIGHBOUR_SIGNAL, current_availability = 0, i, flag, expect_reply = 1;
     char current_time_str[20];
     int neighbour_availability[MAX_NEIGHBOURS] = {-1, -1, -1, -1};
     int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
@@ -166,9 +169,17 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
 
 #pragma omp critical
     {
-        current_availability = timestamp_queue[*queue_index].available_ports;
+        for (i = 0; i < PORTS_PER_NODE; i++)
+        {
+            if (timestamp_queue[*queue_index].ports[i] == 1)
+            {
+                current_availability++;
+            }
+        }
         strcpy(current_time_str, timestamp_queue[*queue_index].time_str);
     }
+    if (worker_rank == 0)
+        printf("%d %d\n", current_availability, *queue_index);
 
     if (current_availability <= availability_threshold)
     {
@@ -268,14 +279,20 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
 
 void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int *exit_flag)
 {
-    usleep(LATENCY_TENTH_OF_SECOND);
-    int current_availability, i, flag, alert_signal;
+    usleep(LATENCY_THOUSANDTH_OF_SECOND);
+    int current_availability = 0, i, flag, alert_signal;
     MPI_Status probe_status;
     MPI_Status recv_status;
 
 #pragma omp critical
     {
-        current_availability = timestamp_queue[*queue_index].available_ports;
+        for (i = 0; i < PORTS_PER_NODE; i++)
+        {
+            if (timestamp_queue[*queue_index].ports[i] == 1)
+            {
+                current_availability++;
+            }
+        }
     }
 
     for (i = 0; i < MAX_NEIGHBOURS; i++)
@@ -303,19 +320,24 @@ void node_master_clock_iteration(struct TimestampData timestamp_queue[MAX_TIMEST
     struct TimestampData new_entry;
     char time_str[20];
     struct tm *time_info;
-    int flag = 0;
+    int flag = 0, i;
     MPI_Status probe_status;
     MPI_Status recv_status;
     int termination_signal;
 
-    sleep(1);
+    sleep(QUEUE_INTERVAL);
 
     // update circular queue
     time(&current_time);
     time_info = localtime(&current_time);
     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", time_info);
 
-    new_entry.available_ports = PORTS_PER_NODE; // initialise all ports to be free
+    // initialise all ports to be free
+    for (i = 0; i < PORTS_PER_NODE; i++)
+    {
+        new_entry.ports[i] = 1;
+    }
+
     strcpy(new_entry.time_str, time_str);
 
 #pragma omp critical
@@ -340,14 +362,18 @@ void node_master_clock_iteration(struct TimestampData timestamp_queue[MAX_TIMEST
 
 void charging_port_iteration(int thread_num, int worker_rank, struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index)
 {
-    sleep(1);
+    sleep(AVAILABILITY_INTERVAL);
     unsigned int seed = thread_num * (worker_rank + 1) + time(NULL);
 #pragma omp critical
     {
-        // a port has a 6/7 chance of being unavailable at any timestamp
-        if (rand_r(&seed) % 7 != 0 && timestamp_queue[*queue_index].available_ports > 0)
+        // a port has a 2/3 chance of being unavailable upon an update
+        if (rand_r(&seed) % 3 != 0)
         {
-            timestamp_queue[*queue_index].available_ports--;
+            timestamp_queue[*queue_index].ports[thread_num - EXTRA_THREADS] = 0;
+        }
+        else
+        {
+            timestamp_queue[*queue_index].ports[thread_num - EXTRA_THREADS] = 1;
         }
     }
 }

@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
             return 1;
         };
         fp = fopen(LOG_FILE_NAME, "a");
-        fprintf(fp, "Node grid dimensions: %d X %d\n", dims[0], dims[1]);
+        fprintf(fp, "Node grid dimensions: %d X %d\nTotal ports per station: %d\nNumber of available ports to be considered insufficient: %d\n", dims[0], dims[1], PORTS_PER_NODE, availability_threshold);
         fclose(fp);
     }
     // broadcast dims to workers

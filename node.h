@@ -8,11 +8,16 @@
 #define UNAVAILABLE 0
 #define NEIGHBOUR_ALERT_TAG 0
 #define NEIGHBOUR_AVAILABILITY_TAG 1
+#define PORTS_PER_NODE 5
+#define EXTRA_THREADS 3
+#define QUEUE_INTERVAL 1
+#define TALLY_INTERVAL 2
+#define AVAILABILITY_INTERVAL 0.5
 
 struct TimestampData
 {
     char time_str[20];
-    int available_ports;
+    int ports[PORTS_PER_NODE];
 };
 
 int node_set_up(MPI_Comm *worker_comm, MPI_Comm *cart_comm, int *dims, int *coord, int *neighbours, int *second_order_neighbours, int *worker_rank);
