@@ -25,8 +25,14 @@ $(TARGET): $(OBJS)
 run:
 	mpirun -oversubscribe -np $(NP) ./simulate $(ARG1) $(ARG2) $(ARG3) $(ARG4)
 
-run-caas:
-	srun -n $(NP) ./simulate $(ARG1) $(ARG2) $(ARG3) $(ARG4)
+run-caas-1:
+	srun -n 5 ./simulate 2 2 $(ARG3) $(ARG4)
+run-caas-2:
+	srun -n 13 ./simulate 3 4 $(ARG3) $(ARG4)
+run-caas-3:
+	srun -n 26 ./simulate 5 5 $(ARG3) $(ARG4)
+run-caas-4:
+	srun -n 101 ./simulate 10 10 $(ARG3) $(ARG4)
 
 clean:
 	rm -f $(OBJ) simulate main.o node.o base_station.o
