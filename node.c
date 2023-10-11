@@ -108,7 +108,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
     // each port gets one thread, one thread dedicated to sending alerts, one dedicated to receiving alerts, one as a master clock
     omp_set_num_threads(PORTS_PER_NODE + EXTRA_THREADS);
 
-#pragma omp parallel shared(timestamp_queue, queue_index, neighbours, worker_rank, cart_comm, exit_flag) private(thread_num)
+#pragma omp parallel shared(timestamp_queue, queue_index, exit_flag) private(thread_num)
     {
         thread_num = omp_get_thread_num();
         if (thread_num == 0)
@@ -131,12 +131,12 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
         }
         else if (thread_num == 2)
         {
-            // thread 2 is the 'master clock'
+            // thread 2 is the 'time keeper'
             // it sets the current time period for all threads by initialising a new entry and updating the queue index
             // it also polls the base station for the termination signal
             while (exit_flag == 0)
             {
-                node_master_clock_iteration(timestamp_queue, &queue_index, &exit_flag);
+                node_time_keeper_iteration(timestamp_queue, &queue_index, &exit_flag);
             }
         }
         else
@@ -308,7 +308,7 @@ void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIM
     }
 }
 
-void node_master_clock_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *exit_flag)
+void node_time_keeper_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *exit_flag)
 {
     time_t current_time;
     struct TimestampData new_entry;

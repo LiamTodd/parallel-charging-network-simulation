@@ -2,7 +2,7 @@ all: simulate
 
 CC = mpicc
 CFLAGS = -Wall -fopenmp
-SRCS = main.c base_station.c node.c
+SRCS = main.c base_station.c node.c helpers.c
 OBJS = $(SRCS:.c=.o)
 TARGET = simulate
 
@@ -12,9 +12,10 @@ ARG2 := 4
 STIME := 20
 THRESH := 2
 
-main.c: base_station.h node.h shared_constants.h shared_structs.h
+main.c: base_station.h node.h shared_constants.h shared_structs.h helpers.h
 base_station.c: base_station.h shared_constants.h shared_structs.h
 node.c: base_station.h node.h shared_constants.h shared_structs.h
+helpers.c: shared_constants.h
 
 %.o: %.CC
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -35,4 +36,4 @@ run-caas-4:
 	srun -n 101 ./simulate 10 10 $(STIME) $(THRESH)
 
 clean:
-	rm -f $(OBJ) simulate main.o node.o base_station.o
+	rm -f $(OBJ) simulate main.o node.o base_station.o helpers.o
