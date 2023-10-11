@@ -1,3 +1,7 @@
+/*
+This file implements the base-station specific functions
+*/
+
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,7 +57,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
     struct AlertReport report_list[MAX_REPORTS];
     int termination_signal = TERMINATION_SIGNAL, so_neighbour, check_index, current_iteration, check_iteration, report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num, alert_count = 0, report_count = 0;
     int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
-    double total_node_comm_time = 0, total_alert_latency_time = 0;
+    double total_node_comm_time = 0, total_alert_latency_time = 0, total_node_base_station_comm_time = 0;
     char time_log_str[20];
     struct tm *log_time_info;
     time_t log_time;
@@ -86,7 +90,10 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     if (probe_flag)
                     {
                         MPI_Recv(&recv_report, 1, alert_report_type, node, ALERT_TAG, MPI_COMM_WORLD, &recv_status);
-                        recv_report.report_received = clock();
+                        recv_report.report_received = MPI_Wtime();
+                        // it is possible that no reply is sent to the reporting node (if its neighbours have availability), so the comm time is preliminarily set to end here
+                        // this may be changed in thread 1 if a reply is sent
+                        recv_report.node_base_station_comm_end = MPI_Wtime();
 
                         if (report_list_index + 1 > MAX_REPORTS)
                         {
@@ -191,12 +198,16 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     {
                         // send second-order neighbour availability back to reporting node
                         MPI_Send(&available_so_neighbours, MAX_SECOND_ORDER_NEIGHBOURS, MPI_INT, log_report.reporting_node, BASE_STATION_REPLY_TAG, MPI_COMM_WORLD);
+                        log_report.node_base_station_comm_end = MPI_Wtime();
                     }
-                    log_report.report_processed = clock();
+
+                    log_report.report_processed = MPI_Wtime();
                     total_node_comm_time += log_report.node_comm_time;
-                    total_alert_latency_time += (double)(log_report.report_processed - log_report.report_received) * 1000 / CLOCKS_PER_SEC;
+                    total_alert_latency_time += (log_report.report_processed - log_report.report_received) * 1000.0;
+                    total_node_base_station_comm_time += (log_report.node_base_station_comm_end - log_report.node_base_station_comm_start) * 1000.0;
                     fprintf(fp, "\t\tCommunication time between nodes: %.5fms\n", log_report.node_comm_time);
-                    fprintf(fp, "\t\tTime between report received and report processed: %.5fms\n", (double)(log_report.report_processed - log_report.report_received) * 1000 / CLOCKS_PER_SEC);
+                    fprintf(fp, "\t\tCommunication time between reporting node and base station: %.5fms\n", (log_report.node_base_station_comm_end - log_report.node_base_station_comm_start) * 1000.0);
+                    fprintf(fp, "\t\tTime between report received and report processed: %.5fms\n", (log_report.report_processed - log_report.report_received) * 1000.0);
                     fprintf(fp, "\t\tTotal messages sent between reporting node and base station: %d\n", send_reply == 1 ? 2 : 1);
                     fprintf(fp, "\t\tAction taken by base station following report: ");
                     if (send_reply)
@@ -222,8 +233,8 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
     }
 
     fprintf(fp,
-            "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n\tTotal communication time between nodes: %.5fms\n\tTotal latency between message received and message processed by base station: %.5fms\n",
-            report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_alert_latency_time);
+            "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n\tTotal communication time between nodes: %.5fms\n\tTotal communication time between nodes and base station: %.5fms\n\tTotal latency between message received and message processed by base station: %.5fms\n",
+            report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_node_base_station_comm_time, total_alert_latency_time);
     fprintf(fp, "Checks:\n\ttotal messages received = total messages processed = total report messages + total alert messages\n\ttotal alert messages = total outgoing messages\n");
     fclose(fp);
     for (int i = 1; i < num_nodes + 1; i++)

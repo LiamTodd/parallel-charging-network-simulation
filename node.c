@@ -163,7 +163,7 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
     int coord[CARTESIAN_DIMENSIONS];
     time_t wait_start, wait_current;
     struct AlertReport alert_report;
-    clock_t start_clock, end_clock;
+    double start_node_comm_time, end_node_comm_time;
 
     MPI_Cart_coords(*cart_comm, worker_rank, CARTESIAN_DIMENSIONS, coord);
 
@@ -182,7 +182,7 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
     if (current_availability <= availability_threshold)
     {
         // alert neighbours
-        start_clock = clock();
+        start_node_comm_time = MPI_Wtime();
         for (i = 0; i < MAX_NEIGHBOURS; i++)
         {
             if (neighbours[i] != MPI_PROC_NULL)
@@ -208,16 +208,16 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
                 }
             }
         }
+        end_node_comm_time = MPI_Wtime();
 
-        end_clock = clock();
         // prepare report for base station
         alert_report.reporting_node = worker_rank;
         alert_report.reporting_node_availability = current_availability;
+        alert_report.node_comm_time = (end_node_comm_time - start_node_comm_time) * 1000.0;
         alert_report.messages_exchanged_between_nodes = 0;
         alert_report.neighbours_count = 0;
         alert_report.row = coord[0];
         alert_report.col = coord[1];
-        alert_report.node_comm_time = (double)(end_clock - start_clock) * 1000 / CLOCKS_PER_SEC;
         alert_report.type = ALERT_TYPE;
         strcpy(alert_report.time_str, current_time_str);
         for (i = 0; i < MAX_NEIGHBOURS; i++)
@@ -250,6 +250,7 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
         if (*exit_flag == 0)
         {
             // indicate to base station that the node is occupied, but its neighbours have availability
+            alert_report.node_base_station_comm_start = MPI_Wtime();
             MPI_Send(&alert_report, 1, alert_report_type, BASE_STATION_RANK, ALERT_TAG, MPI_COMM_WORLD);
             if (expect_reply)
             {

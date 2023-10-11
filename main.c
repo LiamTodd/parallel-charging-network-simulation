@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     fclose(fp);
 
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+    MPI_Wtime();
     if (provided < MPI_THREAD_MULTIPLE)
     {
         printf("The threading support level is lesser than that demanded.\n");
@@ -61,9 +62,9 @@ int main(int argc, char *argv[])
 
     // define data types
     MPI_Datatype alert_report_type;
-    int block_lengths[15] = {1, 1, 4, 4, 1, 8, 1, 20, 1, 1, 1, 1, 1, 1, 1};
-    MPI_Aint offsets[15];
-    MPI_Datatype types[15] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_CHAR, MPI_INT, MPI_INT, MPI_INT, MPI_DOUBLE, MPI_INT, MPI_LONG, MPI_LONG};
+    int block_lengths[17] = {1, 1, 4, 4, 1, 8, 1, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    MPI_Aint offsets[17];
+    MPI_Datatype types[17] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_INT, MPI_CHAR, MPI_INT, MPI_INT, MPI_INT, MPI_DOUBLE, MPI_INT, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE};
     offsets[0] = offsetof(struct AlertReport, reporting_node);
     offsets[1] = offsetof(struct AlertReport, reporting_node_availability);
     offsets[2] = offsetof(struct AlertReport, neighbours);
@@ -79,8 +80,10 @@ int main(int argc, char *argv[])
     offsets[12] = offsetof(struct AlertReport, type);
     offsets[13] = offsetof(struct AlertReport, report_received);
     offsets[14] = offsetof(struct AlertReport, report_processed);
+    offsets[15] = offsetof(struct AlertReport, node_base_station_comm_start);
+    offsets[16] = offsetof(struct AlertReport, node_base_station_comm_end);
 
-    MPI_Type_create_struct(15, block_lengths, offsets, types, &alert_report_type);
+    MPI_Type_create_struct(17, block_lengths, offsets, types, &alert_report_type);
     MPI_Type_commit(&alert_report_type);
 
     MPI_Barrier(MPI_COMM_WORLD);
