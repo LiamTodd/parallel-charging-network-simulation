@@ -165,8 +165,6 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
     struct AlertReport alert_report;
     double start_node_comm_time, end_node_comm_time;
 
-    MPI_Cart_coords(*cart_comm, worker_rank, CARTESIAN_DIMENSIONS, coord);
-
 #pragma omp critical
     {
         for (i = 0; i < PORTS_PER_NODE; i++)
@@ -179,12 +177,25 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
         strcpy(current_time_str, timestamp_queue[*queue_index].time_str);
     }
 
+    // prepare report for base station
+    MPI_Cart_coords(*cart_comm, worker_rank, CARTESIAN_DIMENSIONS, coord);
+    alert_report.messages_exchanged_between_nodes = 0;
+    alert_report.neighbours_count = 0;
+    alert_report.row = coord[0];
+    alert_report.col = coord[1];
+    alert_report.type = ALERT_TYPE;
+    alert_report.reporting_node = worker_rank;
+    alert_report.reporting_node_availability = current_availability;
+    strcpy(alert_report.time_str, current_time_str);
+
     if (current_availability <= availability_threshold)
     {
         // alert neighbours
         start_node_comm_time = MPI_Wtime();
         for (i = 0; i < MAX_NEIGHBOURS; i++)
         {
+            alert_report.neighbours[i] = neighbours[i];
+
             if (neighbours[i] != MPI_PROC_NULL)
             {
                 MPI_Status recv_status;
@@ -199,6 +210,16 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
                     if (flag)
                     {
                         MPI_Recv(&neighbour_availability[i], 1, MPI_INT, neighbours[i], NEIGHBOUR_AVAILABILITY_TAG, *cart_comm, &recv_status);
+                        // 2 messages exchanged with each neighbour
+                        alert_report.messages_exchanged_between_nodes += 2;
+                        alert_report.neighbours_count++;
+                        alert_report.neighbours_availability[i] = neighbour_availability[i];
+                        if (neighbour_availability[i] > availability_threshold)
+                        {
+                            // node has at least one available neighbour, don't need response from base station
+                            alert_report.type = REPORT_TYPE;
+                            expect_reply = 0;
+                        }
                         break;
                     }
                     else
@@ -207,46 +228,20 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
                     }
                 }
             }
-        }
-        end_node_comm_time = MPI_Wtime();
-
-        // prepare report for base station
-        alert_report.reporting_node = worker_rank;
-        alert_report.reporting_node_availability = current_availability;
-        alert_report.node_comm_time = (end_node_comm_time - start_node_comm_time) * 1000.0;
-        alert_report.messages_exchanged_between_nodes = 0;
-        alert_report.neighbours_count = 0;
-        alert_report.row = coord[0];
-        alert_report.col = coord[1];
-        alert_report.type = ALERT_TYPE;
-        strcpy(alert_report.time_str, current_time_str);
-        for (i = 0; i < MAX_NEIGHBOURS; i++)
-        {
-            alert_report.neighbours[i] = neighbours[i];
-
-            if (neighbours[i] != MPI_PROC_NULL)
-            {
-                // 2 messages exchanged with each neighbour
-                alert_report.messages_exchanged_between_nodes += 2;
-                alert_report.neighbours_count++;
-                alert_report.neighbours_availability[i] = neighbour_availability[i];
-                if (neighbour_availability[i] > availability_threshold)
-                {
-                    // node has available neighbours, don't need response from base station
-                    alert_report.type = REPORT_TYPE;
-                    expect_reply = 0;
-                }
-            }
             else
             {
                 // -1 indicates that there is no neighbour for this index
                 alert_report.neighbours_availability[i] = -1;
             }
         }
+        end_node_comm_time = MPI_Wtime();
+        alert_report.node_comm_time = (end_node_comm_time - start_node_comm_time) * 1000.0;
+
         for (i = 0; i < MAX_SECOND_ORDER_NEIGHBOURS; i++)
         {
             alert_report.second_order_neighbours[i] = second_order_neighbours[i];
         }
+
         if (*exit_flag == 0)
         {
             // indicate to base station that the node is occupied, but its neighbours have availability
