@@ -34,7 +34,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
             // This thread is responsible for probing nodes for alerts and recording them into an array
             for (i = 0; i < iterations; i++)
             {
-                if (report_list_index > MAX_REPORTS)
+                if (report_list_index + 1 > MAX_REPORTS)
                 {
                     printf("Max reports reached. Exiting.\n");
                     break;
@@ -125,7 +125,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                         // see if second-order neighbour has sent a report in the last 20 iterations
                         so_neighbour = log_report.second_order_neighbours[k];
                         check_index = report_list_logging_index;
-                        current_iteration = report_list[report_list_logging_index].iteration;
+                        current_iteration = log_report.iteration;
                         check_iteration = current_iteration;
                         available_so_neighbours[k] = log_report.second_order_neighbours[k];
 
@@ -195,9 +195,9 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
             report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_node_base_station_comm_time, total_alert_latency_time);
     fprintf(fp, "Checks:\n\ttotal messages received = total messages processed = total report messages + total alert messages\n\ttotal alert messages = total outgoing messages\n");
     fclose(fp);
-    for (int i = 1; i < num_nodes + 1; i++)
+    for (node = 1; node < num_nodes + 1; node++)
     {
-        MPI_Send(&termination_signal, 1, MPI_INT, i, TERMINATION_TAG, MPI_COMM_WORLD);
+        MPI_Send(&termination_signal, 1, MPI_INT, node, TERMINATION_TAG, MPI_COMM_WORLD);
     }
     return 0;
 }
