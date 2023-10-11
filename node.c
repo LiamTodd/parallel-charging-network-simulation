@@ -118,7 +118,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
             // reports and alerts are sent to the base station based on this
             while (exit_flag == 0)
             {
-                node_tally_iteration(timestamp_queue, &queue_index, neighbours, cart_comm, availability_threshold, &exit_flag, worker_rank, second_order_neighbours, alert_report_type);
+                reporter_iteration(timestamp_queue, &queue_index, neighbours, cart_comm, availability_threshold, &exit_flag, worker_rank, second_order_neighbours, alert_report_type);
             }
         }
         else if (thread_num == 1)
@@ -126,7 +126,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
             // thread 1 periodically probes neighbours for alerts and responds to them
             while (exit_flag == 0)
             {
-                node_neighbour_probe_iteration(timestamp_queue, &queue_index, neighbours, cart_comm, &exit_flag);
+                responder_iteration(timestamp_queue, &queue_index, neighbours, cart_comm, &exit_flag);
             }
         }
         else if (thread_num == 2)
@@ -152,7 +152,7 @@ int node_lifecycle(int *neighbours, int *second_order_neighbours, MPI_Comm *cart
     return 0;
 }
 
-void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int availability_threshold, int *exit_flag, int worker_rank, int *second_order_neighbours, MPI_Datatype alert_report_type)
+void reporter_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int availability_threshold, int *exit_flag, int worker_rank, int *second_order_neighbours, MPI_Datatype alert_report_type)
 {
     sleep(TALLY_INTERVAL);
 
@@ -271,7 +271,7 @@ void node_tally_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DAT
     }
 }
 
-void node_neighbour_probe_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int *exit_flag)
+void responder_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATAPOINTS], int *queue_index, int *neighbours, MPI_Comm *cart_comm, int *exit_flag)
 {
     usleep(LATENCY_THOUSANDTH_OF_SECOND);
     int current_availability = 0, i, flag, alert_signal;
