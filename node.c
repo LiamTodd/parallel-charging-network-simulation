@@ -340,7 +340,7 @@ void node_time_keeper_iteration(struct TimestampData timestamp_queue[MAX_TIMESTA
         timestamp_queue[*queue_index] = new_entry;
     }
 
-    MPI_Iprobe(BASE_STATION_RANK, 0, MPI_COMM_WORLD, &flag, &probe_status);
+    MPI_Iprobe(BASE_STATION_RANK, TERMINATION_TAG, MPI_COMM_WORLD, &flag, &probe_status);
     if (flag)
     {
 
