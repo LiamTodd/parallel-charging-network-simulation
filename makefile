@@ -29,12 +29,10 @@ run-local-3:
 run-local-4:
 	mpirun -oversubscribe -np 26 ./simulate 5 5 $(STIME) $(THRESH) local_5_5.txt
 run-local-5:
-	mpirun -oversubscribe -np 101 ./simulate 10 10 $(STIME) $(THRESH) local_10_10.txt
-run-local-6:
 	mpirun -oversubscribe -np 13 ./simulate 2 6 $(STIME) $(THRESH) local_2_6.txt
-run-local-7:
+run-local-6:
 	mpirun -oversubscribe -np 13 ./simulate 1 12 $(STIME) $(THRESH) local_1_12.txt
-run-local-8:
+run-local-7:
 	mpirun -oversubscribe -np 13 ./simulate 3 4 $(STIME) $(THRESH) local_3_4.txt
 
 run-caas-1:
@@ -46,12 +44,10 @@ run-caas-3:
 run-caas-4:
 	srun -n 26 ./simulate 5 5 $(STIME) $(THRESH) caas_5_5.txt
 run-caas-5:
-	srun -n 101 ./simulate 10 10 $(STIME) $(THRESH) caas_10_10.txt
-run-caas-6:
 	srun -n 13 ./simulate 2 6 $(STIME) $(THRESH) caas_2_6.txt
-run-caas-7:
+run-caas-6:
 	srun -n 13 ./simulate 1 12 $(STIME) $(THRESH) caas_1_12.txt
-run-caas-8:
+run-caas-7:
 	srun -n 13 ./simulate 3 4 $(STIME) $(THRESH) caas_3_4.txt
 
 clean:
