@@ -6,9 +6,6 @@ SRCS = main.c base_station.c node.c helpers.c
 OBJS = $(SRCS:.c=.o)
 TARGET = simulate
 
-NP := 13
-ARG1 := 3
-ARG2 := 4
 STIME := 20
 THRESH := 2
 
@@ -23,17 +20,39 @@ helpers.c: shared_constants.h
 $(TARGET): $(OBJS)
 	$(CC) $(OBJS) -o $(TARGET) $(CFLAGS)
 
-run:
-	mpirun -oversubscribe -np $(NP) ./simulate 3 4 $(STIME) $(THRESH)
+run-local-1:
+	mpirun -oversubscribe -np 5 ./simulate 2 2 $(STIME) $(THRESH) local_2_2.txt
+run-local-2:
+	mpirun -oversubscribe -np 10 ./simulate 3 3 $(STIME) $(THRESH) local_3_3.txt
+run-local-3:
+	mpirun -oversubscribe -np 17 ./simulate 4 4 $(STIME) $(THRESH) local_4_4.txt
+run-local-4:
+	mpirun -oversubscribe -np 26 ./simulate 5 5 $(STIME) $(THRESH) local_5_5.txt
+run-local-5:
+	mpirun -oversubscribe -np 101 ./simulate 10 10 $(STIME) $(THRESH) local_10_10.txt
+run-local-6:
+	mpirun -oversubscribe -np 13 ./simulate 2 6 $(STIME) $(THRESH) local_2_6.txt
+run-local-7:
+	mpirun -oversubscribe -np 13 ./simulate 1 12 $(STIME) $(THRESH) local_1_12.txt
+run-local-8:
+	mpirun -oversubscribe -np 13 ./simulate 3 4 $(STIME) $(THRESH) local_3_4.txt
 
 run-caas-1:
-	srun -n 5 ./simulate 2 2 $(STIME) $(THRESH)
+	srun -n 5 ./simulate 2 2 $(STIME) $(THRESH) caas_2_2.txt
 run-caas-2:
-	srun -n 13 ./simulate 3 4 $(STIME) $(THRESH)
+	srun -n 10 ./simulate 3 3 $(STIME) $(THRESH) caas_3_3.txt
 run-caas-3:
-	srun -n 26 ./simulate 5 5 $(STIME) $(THRESH)
+	srun -n 17 ./simulate 4 4 $(STIME) $(THRESH) caas_4_4.txt
 run-caas-4:
-	srun -n 101 ./simulate 10 10 $(STIME) $(THRESH)
+	srun -n 26 ./simulate 5 5 $(STIME) $(THRESH) caas_5_5.txt
+run-caas-5:
+	srun -n 101 ./simulate 10 10 $(STIME) $(THRESH) caas_10_10.txt
+run-caas-6:
+	srun -n 13 ./simulate 2 6 $(STIME) $(THRESH) caas_2_6.txt
+run-caas-7:
+	srun -n 13 ./simulate 1 12 $(STIME) $(THRESH) caas_1_12.txt
+run-caas-8:
+	srun -n 13 ./simulate 3 4 $(STIME) $(THRESH) caas_3_4.txt
 
 clean:
 	rm -f $(OBJ) simulate main.o node.o base_station.o helpers.o

@@ -5,19 +5,14 @@
 #include "shared_structs.h"
 #include "helpers.h"
 
-int set_up(int argc, char *argv[], int *dims, int *simulation_seconds, int *availability_threshold, MPI_Datatype *alert_report_type)
+int set_up(char *argv[], int *dims, int *simulation_seconds, int *availability_threshold, MPI_Datatype *alert_report_type)
 {
     int m, n, processors;
-    // base station: read in command-line args
-    if (argc != 5)
-    {
-        printf("Error: Invalid number of arguments.\n");
-        return 1;
-    }
     m = atoi(argv[1]);
     n = atoi(argv[2]);
     *simulation_seconds = atoi(argv[3]);
     *availability_threshold = atoi(argv[4]);
+
     if (m == 0 || n == 0)
     {
         printf("Error: Invalid values of n and m. n and m must be positive integers.\n");

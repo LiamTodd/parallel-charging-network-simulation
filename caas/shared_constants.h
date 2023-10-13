@@ -6,7 +6,6 @@
 #define MAX_WAIT_TIME 3
 #define MAX_NEIGHBOURS 4
 #define MAX_SECOND_ORDER_NEIGHBOURS 8
-#define LOG_FILE_NAME "log.txt"
 #define PORTS_PER_NODE 5
 #define ALERT_TYPE 0
 #define REPORT_TYPE 1

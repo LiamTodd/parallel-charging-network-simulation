@@ -1,0 +1,1715 @@
+Simulation start: 2023-10-13 08:19:47
+Node grid dimensions: 3 X 4
+Total ports per station: 5
+Number of available ports to be considered insufficient: 2
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 1
+		Alert time: 2023-10-13 08:19:49
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               3              
+		0               0               0               5               1              
+		2               0               2               5               4              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		6                                        1               2              
+		9                                        2               1              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 3, 6, 9, 4,
+		Communication time between nodes: 2.16006ms
+		Communication time between reporting node and base station: 77.84378ms
+		Time between report received and report processed: 82.50635ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 2
+		Alert time: 2023-10-13 08:19:49
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               1              
+		1               0               1               5               3              
+		3               0               3               5               4              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		7                                        1               3              
+		10                                       2               2              
+		5                                        1               1              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 7, 10, 5, 0,
+		Communication time between nodes: 3.12417ms
+		Communication time between reporting node and base station: 76.86155ms
+		Time between report received and report processed: 183.52260ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 4
+		Alert time: 2023-10-13 08:19:50
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               1              
+		8               2               0               5               3              
+		5               1               1               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		9                                        2               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 6, 9,
+		Communication time between nodes: 2.87794ms
+		Communication time between reporting node and base station: 77.43286ms
+		Time between report received and report processed: 284.72957ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 6
+		Alert time: 2023-10-13 08:19:50
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               2              
+		10              2               2               5               0              
+		5               1               1               5               3              
+		7               1               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		11                                       2               3              
+		9                                        2               1              
+		4                                        1               0              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 3, 11, 9,
+		Communication time between nodes: 4.08435ms
+		Communication time between reporting node and base station: 95.95425ms
+		Time between report received and report processed: 386.04337ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 7
+		Alert time: 2023-10-13 08:19:49
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               4              
+		11              2               3               5               2              
+		6               1               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		10                                       2               2              
+		5                                        1               1              
+		2                                        0               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 10, 5,
+		Communication time between nodes: 3.86271ms
+		Communication time between reporting node and base station: 96.26930ms
+		Time between report received and report processed: 487.18129ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 9
+		Alert time: 2023-10-13 08:19:49
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		9               2               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               3              
+		8               2               0               5               3              
+		10              2               2               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		11                                       2               3              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 11,
+		Communication time between nodes: 2.08195ms
+		Communication time between reporting node and base station: 68.02990ms
+		Time between report received and report processed: 588.44183ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 10
+		Alert time: 2023-10-13 08:19:49
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		10              2               2               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               1              
+		9               2               1               5               2              
+		11              2               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		8                                        2               0              
+		5                                        1               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 8, 5,
+		Communication time between nodes: 1.98016ms
+		Communication time between reporting node and base station: 777.97483ms
+		Time between report received and report processed: 689.92987ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 20):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 11
+		Alert time: 2023-10-13 08:19:49
+		Logged time: 2023-10-13 08:19:50
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		11              2               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               2              
+		10              2               2               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		9                                        2               1              
+		6                                        1               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 1.22248ms
+		Communication time between reporting node and base station: 873.82805ms
+		Time between report received and report processed: 792.81691ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 21):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 0
+		Alert time: 2023-10-13 08:19:49
+		Logged time: 2023-10-13 08:19:51
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+		1               0               1               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		5                                        1               1              
+		8                                        2               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 5, 8,
+		Communication time between nodes: 2.93471ms
+		Communication time between reporting node and base station: 943.44109ms
+		Time between report received and report processed: 794.01627ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 39):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 8
+		Alert time: 2023-10-13 08:19:51
+		Logged time: 2023-10-13 08:19:52
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		8               2               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+		9               2               1               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		0                                        0               0              
+		5                                        1               1              
+		10                                       2               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 5,
+		Communication time between nodes: 1.37288ms
+		Communication time between reporting node and base station: 94.46287ms
+		Time between report received and report processed: 85.61986ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 40):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 1
+		Alert time: 2023-10-13 08:19:52
+		Logged time: 2023-10-13 08:19:52
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               3              
+		0               0               0               5               1              
+		2               0               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		6                                        1               2              
+		9                                        2               1              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 39.88574ms
+		Communication time between reporting node and base station: 48.09324ms
+		Time between report received and report processed: 87.99584ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 40):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 2
+		Alert time: 2023-10-13 08:19:52
+		Logged time: 2023-10-13 08:19:52
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               1              
+		1               0               1               5               2              
+		3               0               3               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		7                                        1               3              
+		10                                       2               2              
+		5                                        1               1              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 5,
+		Communication time between nodes: 37.63326ms
+		Communication time between reporting node and base station: 49.36693ms
+		Time between report received and report processed: 189.69312ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 40):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 4
+		Alert time: 2023-10-13 08:19:52
+		Logged time: 2023-10-13 08:19:52
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               1              
+		8               2               0               5               2              
+		5               1               1               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		9                                        2               1              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 25.37150ms
+		Communication time between reporting node and base station: 62.24490ms
+		Time between report received and report processed: 290.79651ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 40):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 6
+		Alert time: 2023-10-13 08:19:52
+		Logged time: 2023-10-13 08:19:52
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               1              
+		10              2               2               5               1              
+		5               1               1               5               3              
+		7               1               3               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		11                                       2               3              
+		9                                        2               1              
+		4                                        1               0              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 13.96418ms
+		Communication time between reporting node and base station: 91.89659ms
+		Time between report received and report processed: 392.75293ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 40):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 9
+		Alert time: 2023-10-13 08:19:52
+		Logged time: 2023-10-13 08:19:52
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		9               2               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               3              
+		8               2               0               5               2              
+		10              2               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		11                                       2               3              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 11.14909ms
+		Communication time between reporting node and base station: 59.30969ms
+		Time between report received and report processed: 509.72974ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 59):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 6
+		Alert time: 2023-10-13 08:19:54
+		Logged time: 2023-10-13 08:19:54
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               3              
+		10              2               2               5               0              
+		5               1               1               5               1              
+		7               1               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		11                                       2               3              
+		9                                        2               1              
+		4                                        1               0              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 4.38544ms
+		Communication time between reporting node and base station: 4.93238ms
+		Time between report received and report processed: 98.90941ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 59):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 7
+		Alert time: 2023-10-13 08:19:53
+		Logged time: 2023-10-13 08:19:54
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               4              
+		11              2               3               5               3              
+		6               1               2               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		10                                       2               2              
+		5                                        1               1              
+		2                                        0               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 5,
+		Communication time between nodes: 4.66661ms
+		Communication time between reporting node and base station: 19.03030ms
+		Time between report received and report processed: 200.43462ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 60):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 1
+		Alert time: 2023-10-13 08:19:54
+		Logged time: 2023-10-13 08:19:54
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               1              
+		0               0               0               5               0              
+		2               0               2               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		6                                        1               2              
+		9                                        2               1              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 3.16594ms
+		Communication time between reporting node and base station: 62.55419ms
+		Time between report received and report processed: 201.54963ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 60):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 5
+		Alert time: 2023-10-13 08:19:53
+		Logged time: 2023-10-13 08:19:54
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               2              
+		9               2               1               5               3              
+		4               1               0               5               3              
+		6               1               2               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		10                                       2               2              
+		8                                        2               0              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 4.07973ms
+		Communication time between reporting node and base station: 93.52764ms
+		Time between report received and report processed: 303.80025ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 60):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 9
+		Alert time: 2023-10-13 08:19:54
+		Logged time: 2023-10-13 08:19:54
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		9               2               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               1              
+		8               2               0               5               1              
+		10              2               2               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		11                                       2               3              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 2.34252ms
+		Communication time between reporting node and base station: 480.25407ms
+		Time between report received and report processed: 405.75635ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying that no nearby nodes are available.
+
+	MESSAGE RECEIVED (Iteration 69):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 10
+		Alert time: 2023-10-13 08:19:54
+		Logged time: 2023-10-13 08:19:55
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		10              2               2               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               1              
+		9               2               1               5               2              
+		11              2               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		8                                        2               0              
+		5                                        1               1              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 1.57701ms
+		Communication time between reporting node and base station: 58.51583ms
+		Time between report received and report processed: 5.86327ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying that no nearby nodes are available.
+
+	MESSAGE RECEIVED (Iteration 69):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 11
+		Alert time: 2023-10-13 08:19:54
+		Logged time: 2023-10-13 08:19:55
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		11              2               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               3              
+		10              2               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		9                                        2               1              
+		6                                        1               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 0.62410ms
+		Communication time between reporting node and base station: 51.17907ms
+		Time between report received and report processed: 106.88851ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 70):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 0
+		Alert time: 2023-10-13 08:19:54
+		Logged time: 2023-10-13 08:19:55
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+		1               0               1               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		5                                        1               1              
+		8                                        2               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 19.11241ms
+		Communication time between reporting node and base station: 225.49657ms
+		Time between report received and report processed: 106.60180ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying that no nearby nodes are available.
+
+	MESSAGE RECEIVED (Iteration 79):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 6
+		Alert time: 2023-10-13 08:19:56
+		Logged time: 2023-10-13 08:19:56
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               2              
+		10              2               2               5               4              
+		5               1               1               5               3              
+		7               1               3               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		11                                       2               3              
+		9                                        2               1              
+		4                                        1               0              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 8.09086ms
+		Communication time between reporting node and base station: 1.74308ms
+		Time between report received and report processed: 7.54288ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 79):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 7
+		Alert time: 2023-10-13 08:19:55
+		Logged time: 2023-10-13 08:19:56
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               3              
+		11              2               3               5               1              
+		6               1               2               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		10                                       2               2              
+		5                                        1               1              
+		2                                        0               2              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 4.43122ms
+		Communication time between reporting node and base station: 19.56597ms
+		Time between report received and report processed: 109.44381ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 80):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 2
+		Alert time: 2023-10-13 08:19:56
+		Logged time: 2023-10-13 08:19:56
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               0              
+		1               0               1               5               3              
+		3               0               3               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		7                                        1               3              
+		10                                       2               2              
+		5                                        1               1              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 11.68722ms
+		Communication time between reporting node and base station: 60.28880ms
+		Time between report received and report processed: 111.66511ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 89):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 8
+		Alert time: 2023-10-13 08:19:56
+		Logged time: 2023-10-13 08:19:57
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		8               2               0               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+		9               2               1               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		0                                        0               0              
+		5                                        1               1              
+		10                                       2               2              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 10.01991ms
+		Communication time between reporting node and base station: 69.05743ms
+		Time between report received and report processed: 14.82037ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying that no nearby nodes are available.
+
+	MESSAGE RECEIVED (Iteration 89):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 11
+		Alert time: 2023-10-13 08:19:56
+		Logged time: 2023-10-13 08:19:57
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		11              2               3               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               1              
+		10              2               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		9                                        2               1              
+		6                                        1               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 1.37883ms
+		Communication time between reporting node and base station: 170.79498ms
+		Time between report received and report processed: 116.34578ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 100):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 4
+		Alert time: 2023-10-13 08:19:58
+		Logged time: 2023-10-13 08:19:58
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               2              
+		8               2               0               5               2              
+		5               1               1               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		9                                        2               1              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 1.87507ms
+		Communication time between reporting node and base station: 86.64704ms
+		Time between report received and report processed: 24.67726ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 109):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 9
+		Alert time: 2023-10-13 08:19:58
+		Logged time: 2023-10-13 08:19:59
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		9               2               1               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               1              
+		8               2               0               5               3              
+		10              2               2               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		11                                       2               3              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 1.63243ms
+		Communication time between reporting node and base station: 89.13456ms
+		Time between report received and report processed: 13.53504ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 119):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 6
+		Alert time: 2023-10-13 08:20:00
+		Logged time: 2023-10-13 08:20:00
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               2              
+		10              2               2               5               1              
+		5               1               1               5               1              
+		7               1               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		11                                       2               3              
+		9                                        2               1              
+		4                                        1               0              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 3, 1,
+		Communication time between nodes: 7.26677ms
+		Communication time between reporting node and base station: 39.68741ms
+		Time between report received and report processed: 25.57328ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 119):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 7
+		Alert time: 2023-10-13 08:20:00
+		Logged time: 2023-10-13 08:20:00
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               3              
+		11              2               3               5               2              
+		6               1               2               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		10                                       2               2              
+		5                                        1               1              
+		2                                        0               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 10, 5,
+		Communication time between nodes: 6.10501ms
+		Communication time between reporting node and base station: 14.66612ms
+		Time between report received and report processed: 130.36096ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 119):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 10
+		Alert time: 2023-10-13 08:19:59
+		Logged time: 2023-10-13 08:20:00
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		10              2               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               2              
+		9               2               1               5               0              
+		11              2               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		8                                        2               0              
+		5                                        1               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 5,
+		Communication time between nodes: 6.21412ms
+		Communication time between reporting node and base station: 318.46742ms
+		Time between report received and report processed: 233.25520ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 120):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 0
+		Alert time: 2023-10-13 08:19:59
+		Logged time: 2023-10-13 08:20:00
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               1              
+		1               0               1               5               4              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		5                                        1               1              
+		8                                        2               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 5,
+		Communication time between nodes: 37.49689ms
+		Communication time between reporting node and base station: 163.69963ms
+		Time between report received and report processed: 229.00891ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 120):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 2
+		Alert time: 2023-10-13 08:20:00
+		Logged time: 2023-10-13 08:20:00
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               2              
+		1               0               1               5               4              
+		3               0               3               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		7                                        1               3              
+		10                                       2               2              
+		5                                        1               1              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 5,
+		Communication time between nodes: 3.23680ms
+		Communication time between reporting node and base station: 76.89426ms
+		Time between report received and report processed: 332.11974ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 120):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 4
+		Alert time: 2023-10-13 08:20:00
+		Logged time: 2023-10-13 08:20:00
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               2              
+		8               2               0               5               1              
+		5               1               1               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		9                                        2               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 1,
+		Communication time between nodes: 17.99185ms
+		Communication time between reporting node and base station: 526.04639ms
+		Time between report received and report processed: 424.30058ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 120):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 5
+		Alert time: 2023-10-13 08:19:59
+		Logged time: 2023-10-13 08:20:00
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               4              
+		9               2               1               5               1              
+		4               1               0               5               2              
+		6               1               2               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		10                                       2               2              
+		8                                        2               0              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 16.55615ms
+		Communication time between reporting node and base station: 117.19514ms
+		Time between report received and report processed: 526.05814ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 128):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 9
+		Alert time: 2023-10-13 08:20:00
+		Logged time: 2023-10-13 08:20:01
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		9               2               1               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               2              
+		8               2               0               5               2              
+		10              2               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		11                                       2               3              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 1,
+		Communication time between nodes: 2.61240ms
+		Communication time between reporting node and base station: 33.53212ms
+		Time between report received and report processed: 26.19489ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 138):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 8
+		Alert time: 2023-10-13 08:20:01
+		Logged time: 2023-10-13 08:20:02
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		8               2               0               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               1              
+		9               2               1               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		0                                        0               0              
+		5                                        1               1              
+		10                                       2               2              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 0.89091ms
+		Communication time between reporting node and base station: 38.73466ms
+		Time between report received and report processed: 26.88461ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying that no nearby nodes are available.
+
+	MESSAGE RECEIVED (Iteration 138):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 11
+		Alert time: 2023-10-13 08:20:01
+		Logged time: 2023-10-13 08:20:02
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		11              2               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               3              
+		10              2               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		9                                        2               1              
+		6                                        1               2              
+
+		Available nearby nodes (no report received in last 20 iterations): 3,
+		Communication time between nodes: 1.32131ms
+		Communication time between reporting node and base station: 13.53025ms
+		Time between report received and report processed: 130.35325ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 139):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 5
+		Alert time: 2023-10-13 08:20:02
+		Logged time: 2023-10-13 08:20:02
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               4              
+		9               2               1               5               1              
+		4               1               0               5               1              
+		6               1               2               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		10                                       2               2              
+		8                                        2               0              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 2.59558ms
+		Communication time between reporting node and base station: 17.51126ms
+		Time between report received and report processed: 131.82398ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 140):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 0
+		Alert time: 2023-10-13 08:20:01
+		Logged time: 2023-10-13 08:20:02
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               1              
+		1               0               1               5               4              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		5                                        1               1              
+		8                                        2               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 1.84185ms
+		Communication time between reporting node and base station: 174.65767ms
+		Time between report received and report processed: 133.19618ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 159):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 3
+		Alert time: 2023-10-13 08:20:03
+		Logged time: 2023-10-13 08:20:04
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               0              
+		2               0               2               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		11                                       2               3              
+		6                                        1               2              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 1,
+		Communication time between nodes: 2.95798ms
+		Communication time between reporting node and base station: 99.37038ms
+		Time between report received and report processed: 99.77796ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 159):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 5
+		Alert time: 2023-10-13 08:20:04
+		Logged time: 2023-10-13 08:20:04
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               4              
+		9               2               1               5               3              
+		4               1               0               5               1              
+		6               1               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		10                                       2               2              
+		8                                        2               0              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 8.69399ms
+		Communication time between reporting node and base station: 46.11810ms
+		Time between report received and report processed: 202.39903ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 159):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 7
+		Alert time: 2023-10-13 08:20:04
+		Logged time: 2023-10-13 08:20:04
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               2              
+		11              2               3               5               3              
+		6               1               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		10                                       2               2              
+		5                                        1               1              
+		2                                        0               2              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 3.79825ms
+		Communication time between reporting node and base station: 68.45231ms
+		Time between report received and report processed: 303.76356ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 168):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 4
+		Alert time: 2023-10-13 08:20:04
+		Logged time: 2023-10-13 08:20:05
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               4              
+		8               2               0               5               1              
+		5               1               1               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		9                                        2               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 1,
+		Communication time between nodes: 3.91569ms
+		Communication time between reporting node and base station: 49.32566ms
+		Time between report received and report processed: 4.57260ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 168):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 10
+		Alert time: 2023-10-13 08:20:04
+		Logged time: 2023-10-13 08:20:05
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		10              2               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               3              
+		9               2               1               5               3              
+		11              2               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		8                                        2               0              
+		5                                        1               1              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 1.50171ms
+		Communication time between reporting node and base station: 49.83749ms
+		Time between report received and report processed: 106.21798ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 178):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 9
+		Alert time: 2023-10-13 08:20:05
+		Logged time: 2023-10-13 08:20:06
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		9               2               1               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               2              
+		8               2               0               5               1              
+		10              2               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		11                                       2               3              
+		4                                        1               0              
+
+		Available nearby nodes (no report received in last 20 iterations): 1, 6,
+		Communication time between nodes: 1.18188ms
+		Communication time between reporting node and base station: 60.06324ms
+		Time between report received and report processed: 8.78201ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 179):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 2
+		Alert time: 2023-10-13 08:20:06
+		Logged time: 2023-10-13 08:20:06
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               0              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               2              
+		1               0               1               5               4              
+		3               0               3               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		7                                        1               3              
+		10                                       2               2              
+		5                                        1               1              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 3.07882ms
+		Communication time between reporting node and base station: 26.00878ms
+		Time between report received and report processed: 10.03139ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 179):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 3
+		Alert time: 2023-10-13 08:20:05
+		Logged time: 2023-10-13 08:20:06
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               1              
+		2               0               2               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		11                                       2               3              
+		6                                        1               2              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 6, 1,
+		Communication time between nodes: 2.09604ms
+		Communication time between reporting node and base station: 211.10578ms
+		Time between report received and report processed: 111.68006ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying of available nearby nodes.
+
+	MESSAGE RECEIVED (Iteration 179):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 5
+		Alert time: 2023-10-13 08:20:06
+		Logged time: 2023-10-13 08:20:06
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               4              
+		9               2               1               5               1              
+		4               1               0               5               1              
+		6               1               2               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		10                                       2               2              
+		8                                        2               0              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 3.60726ms
+		Communication time between reporting node and base station: 44.70377ms
+		Time between report received and report processed: 213.39181ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 179):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 7
+		Alert time: 2023-10-13 08:20:06
+		Logged time: 2023-10-13 08:20:06
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		3               0               3               5               2              
+		11              2               3               5               3              
+		6               1               2               5               2              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		10                                       2               2              
+		5                                        1               1              
+		2                                        0               2              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 3.34658ms
+		Communication time between reporting node and base station: 59.34523ms
+		Time between report received and report processed: 314.80545ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 188):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 4
+		Alert time: 2023-10-13 08:20:06
+		Logged time: 2023-10-13 08:20:07
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		0               0               0               5               4              
+		8               2               0               5               2              
+		5               1               1               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		1                                        0               1              
+		6                                        1               2              
+		9                                        2               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 1, 6,
+		Communication time between nodes: 3.56030ms
+		Communication time between reporting node and base station: 48.29662ms
+		Time between report received and report processed: 14.99320ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 188):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 6
+		Alert time: 2023-10-13 08:20:06
+		Logged time: 2023-10-13 08:20:07
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               3              
+		10              2               2               5               2              
+		5               1               1               5               1              
+		7               1               3               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		11                                       2               3              
+		9                                        2               1              
+		4                                        1               0              
+		1                                        0               1              
+
+		Available nearby nodes (no report received in last 20 iterations): 1,
+		Communication time between nodes: 3.29683ms
+		Communication time between reporting node and base station: 50.60732ms
+		Time between report received and report processed: 116.58504ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 188):
+	Message type: ALERT (reporter's neighbours have insufficient availability)
+		Reporting node: 8
+		Alert time: 2023-10-13 08:20:06
+		Logged time: 2023-10-13 08:20:07
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		8               2               0               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		4               1               0               5               2              
+		9               2               1               5               0              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		0                                        0               0              
+		5                                        1               1              
+		10                                       2               2              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 1.58339ms
+		Communication time between reporting node and base station: 271.10373ms
+		Time between report received and report processed: 218.60733ms
+		Total messages sent between reporting node and base station: 2
+		Action taken by base station following report: Replied to reporting node: Notifying that no nearby nodes are available.
+
+	MESSAGE RECEIVED (Iteration 188):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 10
+		Alert time: 2023-10-13 08:20:06
+		Logged time: 2023-10-13 08:20:07
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		10              2               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               2              
+		9               2               1               5               0              
+		11              2               3               5               3              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		8                                        2               0              
+		5                                        1               1              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 1.61467ms
+		Communication time between reporting node and base station: 50.79229ms
+		Time between report received and report processed: 320.07758ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 198):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 11
+		Alert time: 2023-10-13 08:20:07
+		Logged time: 2023-10-13 08:20:08
+		Adjacent nodes: 2
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		11              2               3               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		7               1               3               5               3              
+		10              2               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		3                                        0               3              
+		9                                        2               1              
+		6                                        1               2              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 0.51263ms
+		Communication time between reporting node and base station: 55.01750ms
+		Time between report received and report processed: 26.25878ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 199):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 2
+		Alert time: 2023-10-13 08:20:08
+		Logged time: 2023-10-13 08:20:08
+		Adjacent nodes: 3
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		2               0               2               5               2              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		6               1               2               5               1              
+		1               0               1               5               4              
+		3               0               3               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		7                                        1               3              
+		10                                       2               2              
+		5                                        1               1              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 10.89975ms
+		Communication time between reporting node and base station: 18.37722ms
+		Time between report received and report processed: 26.57169ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+	MESSAGE RECEIVED (Iteration 199):
+	Message type: REPORT (reporter's neighbours have sufficient availability)
+		Reporting node: 5
+		Alert time: 2023-10-13 08:20:08
+		Logged time: 2023-10-13 08:20:08
+		Adjacent nodes: 4
+		Availability threshold: 2
+
+		Reporting Node  Row Coord       Col Coord       Total Ports     Available Ports
+		5               1               1               5               1              
+
+		Adjacent Node   Row Coord       Col Coord       Total Ports     Available Ports
+		1               0               1               5               5              
+		9               2               1               5               3              
+		4               1               0               5               1              
+		6               1               2               5               1              
+
+		Nearby Nodes (second order neighbours)   Row Coord       Col Coord      
+		2                                        0               2              
+		7                                        1               3              
+		10                                       2               2              
+		8                                        2               0              
+		0                                        0               0              
+
+		Available nearby nodes (no report received in last 20 iterations):
+		Communication time between nodes: 13.79805ms
+		Communication time between reporting node and base station: 34.34651ms
+		Time between report received and report processed: 154.34815ms
+		Total messages sent between reporting node and base station: 1
+		Action taken by base station following report: Did not reply to reporting node (its neighbour(s) had sufficient availability).
+
+Summary:
+	Total messages received: 59
+	Total messages processed: 59
+	Total report messages: 42
+	Total alert messages: 17
+	Total outgoing messages: 17
+	Total communication time between nodes: 406.34794ms
+	Average communication time between nodes: 6.88725ms
+	Total communication time between nodes and base station: 7763.22600ms
+	Average communication time between nodes and base station: 131.58010ms
+	Total latency between message received and message processed by base station: 12275.60351ms
+	Average latency between message received and message processed by base station: 208.06108
+Checks:
+	total messages received = total messages processed = total report messages + total alert messages
+	total alert messages = total outgoing messages
+
+Simulation end: 2023-10-13 08:20:08

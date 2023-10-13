@@ -18,11 +18,19 @@ int main(int argc, char *argv[])
     time_t clock_time;
     struct tm *tm_info;
     char time_str[20];
+    char *log_file_name;
+
+    if (argc != 6)
+    {
+        printf("Error: Invalid number of arguments.\n");
+        return 1;
+    }
+    log_file_name = argv[5];
 
     time(&clock_time);
     tm_info = localtime(&clock_time);
     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
-    fp = fopen(LOG_FILE_NAME, "w");
+    fp = fopen(log_file_name, "w");
     fprintf(fp, "Simulation start: %s\n", time_str);
     fclose(fp);
 
@@ -33,7 +41,8 @@ int main(int argc, char *argv[])
         MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     }
     MPI_Wtime();
-    if (set_up(argc, argv, dims, &simulation_seconds, &availability_threshold, &alert_report_type) != 0){
+    if (set_up(argv, dims, &simulation_seconds, &availability_threshold, &alert_report_type) != 0)
+    {
         printf("Error while setting up.\n");
         return 1;
     }
@@ -43,7 +52,7 @@ int main(int argc, char *argv[])
 
     if (global_rank == BASE_STATION_RANK)
     {
-        fp = fopen(LOG_FILE_NAME, "a");
+        fp = fopen(log_file_name, "a");
         fprintf(fp, "Node grid dimensions: %d X %d\nTotal ports per station: %d\nNumber of available ports to be considered insufficient: %d\n", dims[0], dims[1], PORTS_PER_NODE, availability_threshold);
         fclose(fp);
     }
@@ -63,7 +72,7 @@ int main(int argc, char *argv[])
     // lifecycle loops
     if (global_rank == BASE_STATION_RANK)
     {
-        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, alert_report_type, dims[1], availability_threshold) != 0)
+        if (base_station_lifecycle(dims[0] * dims[1], simulation_seconds, alert_report_type, dims[1], availability_threshold, log_file_name) != 0)
         {
             printf("Error in base station lifecycle.\n");
             return 1;
@@ -71,7 +80,7 @@ int main(int argc, char *argv[])
         time(&clock_time);
         tm_info = localtime(&clock_time);
         strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
-        fp = fopen(LOG_FILE_NAME, "a");
+        fp = fopen(log_file_name, "a");
         fprintf(fp, "\nSimulation end: %s\n", time_str);
         fclose(fp);
     }

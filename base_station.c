@@ -11,7 +11,7 @@ This file implements the base-station specific functions
 #include "shared_constants.h"
 #include "shared_structs.h"
 
-int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold)
+int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold, char *log_file_name)
 {
     struct AlertReport report_list[MAX_REPORTS];
     int termination_signal = TERMINATION_SIGNAL, so_neighbour, check_index, current_iteration, check_iteration, report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num, alert_count = 0, report_count = 0;
@@ -23,7 +23,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
     FILE *fp;
     struct AlertReport recv_report, log_report;
 
-    fp = fopen(LOG_FILE_NAME, "a");
+    fp = fopen(log_file_name, "a");
 
     omp_set_num_threads(2);
 #pragma omp parallel shared(report_list_index, report_list, exit_flag)
@@ -191,8 +191,8 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
     }
 
     fprintf(fp,
-            "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n\tTotal communication time between nodes: %.5fms\n\tTotal communication time between nodes and base station: %.5fms\n\tTotal latency between message received and message processed by base station: %.5fms\n",
-            report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_node_base_station_comm_time, total_alert_latency_time);
+            "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n\tTotal communication time between nodes: %.5fms\n\tAverage communication time between nodes: %.5fms\n\tTotal communication time between nodes and base station: %.5fms\n\tAverage communication time between nodes and base station: %.5fms\n\tTotal latency between message received and message processed by base station: %.5fms\n\tAverage latency between message received and message processed by base station: %.5f\n",
+            report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_node_comm_time / (report_list_index + 1), total_node_base_station_comm_time, total_node_base_station_comm_time / (report_list_index + 1), total_alert_latency_time, total_alert_latency_time / (report_list_index + 1));
     fprintf(fp, "Checks:\n\ttotal messages received = total messages processed = total report messages + total alert messages\n\ttotal alert messages = total outgoing messages\n");
     fclose(fp);
     for (node = 1; node < num_nodes + 1; node++)
