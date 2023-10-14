@@ -14,7 +14,7 @@ This file implements the base-station specific functions
 int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype alert_report_type, int cols, int availability_threshold, char *log_file_name)
 {
     struct AlertReport report_list[MAX_REPORTS];
-    int termination_signal = TERMINATION_SIGNAL, so_neighbour, check_index, current_iteration, check_iteration, report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num, alert_count = 0, report_count = 0;
+    int node_base_exchange, total_messages_between_nodes = 0, total_messages_between_nodes_and_base = 0, termination_signal = TERMINATION_SIGNAL, so_neighbour, check_index, current_iteration, check_iteration, report_list_index = -1, report_list_logging_index = -1, iterations = simulation_seconds * 10, i, j, k, l, probe_flag, send_reply, nearby_available, exit_flag = 0, node, thread_num, alert_count = 0, report_count = 0;
     int available_so_neighbours[MAX_SECOND_ORDER_NEIGHBOURS];
     double total_node_comm_time = 0, total_alert_latency_time = 0, total_node_base_station_comm_time = 0;
     char time_log_str[20];
@@ -161,12 +161,16 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
 
                     log_report.report_processed = MPI_Wtime();
                     total_node_comm_time += log_report.node_comm_time;
+                    total_messages_between_nodes += log_report.messages_exchanged_between_nodes;
+                    node_base_exchange = send_reply == 1 ? 2 : 1;
+                    total_messages_between_nodes_and_base += node_base_exchange;
                     total_alert_latency_time += (log_report.report_processed - log_report.report_received) * 1000.0;
                     total_node_base_station_comm_time += (log_report.node_base_station_comm_end - log_report.node_base_station_comm_start) * 1000.0;
                     fprintf(fp, "\t\tCommunication time between nodes: %.5fms\n", log_report.node_comm_time);
                     fprintf(fp, "\t\tCommunication time between reporting node and base station: %.5fms\n", (log_report.node_base_station_comm_end - log_report.node_base_station_comm_start) * 1000.0);
                     fprintf(fp, "\t\tTime between report received and report processed: %.5fms\n", (log_report.report_processed - log_report.report_received) * 1000.0);
-                    fprintf(fp, "\t\tTotal messages sent between reporting node and base station: %d\n", send_reply == 1 ? 2 : 1);
+                    fprintf(fp, "\t\tTotal messages sent between reporting node and base station: %d\n", node_base_exchange);
+                    fprintf(fp, "\t\tTotal messages exchanged between nodes: %d\n", log_report.messages_exchanged_between_nodes);
                     fprintf(fp, "\t\tAction taken by base station following report: ");
                     if (send_reply)
                     {
@@ -191,8 +195,8 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
     }
 
     fprintf(fp,
-            "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n\tTotal communication time between nodes: %.5fms\n\tAverage communication time between nodes: %.5fms\n\tTotal communication time between nodes and base station: %.5fms\n\tAverage communication time between nodes and base station: %.5fms\n\tTotal latency between message received and message processed by base station: %.5fms\n\tAverage latency between message received and message processed by base station: %.5f\n",
-            report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_node_comm_time / (report_list_index + 1), total_node_base_station_comm_time, total_node_base_station_comm_time / (report_list_index + 1), total_alert_latency_time, total_alert_latency_time / (report_list_index + 1));
+            "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n\tTotal communication time between nodes: %.5fms\n\tAverage communication time between nodes: %.5fms\n\tTotal communication time between nodes and base station: %.5fms\n\tAverage communication time between nodes and base station: %.5fms\n\tTotal latency between message received and message processed by base station: %.5fms\n\tAverage latency between message received and message processed by base station: %.5f\n\tTotal messages exchanged between base station and nodes: %d\n\tAverage messages exchanged between base station and nodes: %.5f\n\tTotal messages exchanged between nodes: %d\n\tAverage messages exchanged between nodes: %.5f\n",
+            report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_node_comm_time / (report_list_index + 1), total_node_base_station_comm_time, total_node_base_station_comm_time / (report_list_index + 1), total_alert_latency_time, total_alert_latency_time / (report_list_index + 1), total_messages_between_nodes_and_base, (double)total_messages_between_nodes_and_base / (report_list_index + 1), total_messages_between_nodes, (double)total_messages_between_nodes / (report_list_index + 1));
     fprintf(fp, "Checks:\n\ttotal messages received = total messages processed = total report messages + total alert messages\n\ttotal alert messages = total outgoing messages\n");
     fclose(fp);
     for (node = 1; node < num_nodes + 1; node++)
