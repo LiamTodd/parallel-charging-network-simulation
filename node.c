@@ -1,3 +1,7 @@
+/*
+This file implements node-specific functions
+*/
+
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -289,6 +293,7 @@ void responder_iteration(struct TimestampData timestamp_queue[MAX_TIMESTAMP_DATA
         }
     }
 
+    // probe neighbours for alerts, reply with avaialbility
     for (i = 0; i < MAX_NEIGHBOURS; i++)
     {
         if (neighbours[i] != MPI_PROC_NULL)
@@ -321,7 +326,6 @@ void node_time_keeper_iteration(struct TimestampData timestamp_queue[MAX_TIMESTA
 
     sleep(QUEUE_INTERVAL);
 
-    // update circular queue
     time(&current_time);
     time_info = localtime(&current_time);
     strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", time_info);
@@ -334,12 +338,14 @@ void node_time_keeper_iteration(struct TimestampData timestamp_queue[MAX_TIMESTA
 
     strcpy(new_entry.time_str, time_str);
 
+    // update circular queue
 #pragma omp critical
     {
         *queue_index = (*queue_index + 1) % MAX_TIMESTAMP_DATAPOINTS;
         timestamp_queue[*queue_index] = new_entry;
     }
 
+    // probe base station for termination signal
     MPI_Iprobe(BASE_STATION_RANK, TERMINATION_TAG, MPI_COMM_WORLD, &flag, &probe_status);
     if (flag)
     {

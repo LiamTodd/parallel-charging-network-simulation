@@ -1,3 +1,7 @@
+/*
+This file implements helper functions which are non-specific to the base station or nodes
+*/
+
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +11,7 @@
 
 int set_up(char *argv[], int *dims, int *simulation_seconds, int *availability_threshold, MPI_Datatype *alert_report_type)
 {
+    // process command-line arguments
     int m, n, processors;
     m = atoi(argv[1]);
     n = atoi(argv[2]);

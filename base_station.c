@@ -67,6 +67,7 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
                     }
                 }
             }
+            // begin clean termination process
 #pragma omp critical
             {
                 exit_flag = 1;
@@ -194,11 +195,13 @@ int base_station_lifecycle(int num_nodes, int simulation_seconds, MPI_Datatype a
         }
     }
 
+    // log summary statistics
     fprintf(fp,
             "\nSummary:\n\tTotal messages received: %d\n\tTotal messages processed: %d\n\tTotal report messages: %d\n\tTotal alert messages: %d\n\tTotal outgoing messages: %d\n\tTotal communication time between nodes: %.5fms\n\tAverage communication time between nodes: %.5fms\n\tTotal communication time between nodes and base station: %.5fms\n\tAverage communication time between nodes and base station: %.5fms\n\tTotal latency between message received and message processed by base station: %.5fms\n\tAverage latency between message received and message processed by base station: %.5f\n\tTotal messages exchanged between base station and nodes: %d\n\tAverage messages exchanged between base station and nodes: %.5f\n\tTotal messages exchanged between nodes: %d\n\tAverage messages exchanged between nodes: %.5f\n",
             report_list_index + 1, report_list_logging_index + 1, report_count, alert_count, alert_count, total_node_comm_time, total_node_comm_time / (report_list_index + 1), total_node_base_station_comm_time, total_node_base_station_comm_time / (report_list_index + 1), total_alert_latency_time, total_alert_latency_time / (report_list_index + 1), total_messages_between_nodes_and_base, (double)total_messages_between_nodes_and_base / (report_list_index + 1), total_messages_between_nodes, (double)total_messages_between_nodes / (report_list_index + 1));
     fprintf(fp, "Checks:\n\ttotal messages received = total messages processed = total report messages + total alert messages\n\ttotal alert messages = total outgoing messages\n");
     fclose(fp);
+    // send termination signal to nodes
     for (node = 1; node < num_nodes + 1; node++)
     {
         MPI_Send(&termination_signal, 1, MPI_INT, node, TERMINATION_TAG, MPI_COMM_WORLD);

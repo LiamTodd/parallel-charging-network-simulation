@@ -1,3 +1,7 @@
+/*
+This file implements the driver function for the FIT3143 Assignment 2 simulation
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
